@@ -49,3 +49,6 @@ configuration relevant for your application.
 The app skeleton uses a subset of [Foundation](http://foundation.zurb.com/) (v5) CSS
 framework by default. You can, however, replace it with any other library or
 custom styles.
+=======
+# NCC-3.5x
+NinjasChatClub with cakephp 3.5x and bootstrap
