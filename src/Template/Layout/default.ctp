@@ -37,6 +37,9 @@ $cakeDescription = 'CakePHP: the rapid development php framework';
     <?= $this->Html->script('jquery-1.12.4.min') ?>
     <?= $this->Html->script('bootstrap.min') ?>
     
+    <!-- include the BotDetect layout stylesheet -->
+	<?= $this->Html->css(captcha_layout_stylesheet_url(), ['inline' => false]) ?>
+    
 </head>
 <body>
     <nav class="top-bar expanded" data-topbar role="navigation">

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "03d554b0b0c9984fd2a2c06eb21a8ed6",
+    "content-hash": "9e346a2588e475a5ac01952e1472bf2e",
     "packages": [
         {
             "name": "aura/intl",
@@ -288,6 +288,96 @@
             ],
             "description": "A composer installer for CakePHP 3.0+ plugins.",
             "time": "2017-12-24T21:09:29+00:00"
+        },
+        {
+            "name": "captcha-com/cakephp-captcha",
+            "version": "4.2.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/captcha-com/cakephp-captcha.git",
+                "reference": "0cf5de04983ae5219aa57da8b5d9c7fd2b380055"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://files.phpcomposer.com/files/captcha-com/cakephp-captcha/0cf5de04983ae5219aa57da8b5d9c7fd2b380055.zip",
+                "reference": "0cf5de04983ae5219aa57da8b5d9c7fd2b380055",
+                "shasum": ""
+            },
+            "require": {
+                "captcha-com/captcha": "4.*",
+                "php": ">=5.4.0"
+            },
+            "type": "cakephp-plugin",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "4.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "CakeCaptcha\\": "src/"
+                },
+                "files": [
+                    "src/Support/helpers.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "authors": [
+                {
+                    "name": "BotDetect Captcha",
+                    "email": "botdetect.support@captcha.com",
+                    "homepage": "http://captcha.com/doc/php/cakephp-captcha-quickstart.html"
+                }
+            ],
+            "description": "BotDetect 4 PHP Captcha generator integration for the CakePHP framework.",
+            "homepage": "http://captcha.com/doc/php/cakephp-captcha-quickstart.html",
+            "keywords": [
+                "botdetect",
+                "cakephp captcha",
+                "captcha",
+                "captcha generator"
+            ],
+            "time": "2018-02-15T07:44:51+00:00"
+        },
+        {
+            "name": "captcha-com/captcha",
+            "version": "4.2.0",
+            "source": {
+                "type": "git",
+                "url": "https://git.captcha.com/botdetect-php-captcha-library.git",
+                "reference": "09e9db1913e2ae7f58ef9160783c5e6388e7ba11"
+            },
+            "require": {
+                "php": ">=5.2.1"
+            },
+            "suggest": {
+                "captcha-com/cakephp-captcha": "BotDetect 4 PHP Captcha generator integration for the CakePHP framework.",
+                "captcha-com/laravel-captcha": "BotDetect 4 PHP Captcha generator integration for the Laravel framework.",
+                "captcha-com/symfony-captcha-bundle": "BotDetect 4 PHP Captcha generator integration for the Symfony framework."
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "4.x-dev"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "proprietary"
+            ],
+            "authors": [
+                {
+                    "name": "BotDetect Captcha",
+                    "email": "botdetect.support@captcha.com",
+                    "homepage": "http://captcha.com/php-captcha.html"
+                }
+            ],
+            "description": "BotDetect 4 PHP Captcha Generator -- Free composer package.",
+            "homepage": "http://captcha.com/php-captcha.html",
+            "keywords": [
+                "captcha"
+            ],
+            "time": "2018-02-15T17:27:52+00:00"
         },
         {
             "name": "holt59/cakephp3-bootstrap-helpers",

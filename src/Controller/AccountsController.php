@@ -15,13 +15,26 @@ class AccountsController extends AppController {
     	]);
     	$this->set("someAccounts", $someAccounts);
     	
+    	// load the Captcha component and set its parameter
+    	$this->loadComponent('CakeCaptcha.Captcha', [
+    		'captchaConfig' => 'LoginCaptcha'
+    	]);
+    	
     	if ($this->request->is('post')) {
-    		$user = $this->Auth->identify();
-    		if ($user) {
-    			$this->Auth->setUser($user);
-    			return $this->redirect(["controller" => "NCC", "action" => "index"]);
+    		// validate the user-entered Captcha code
+    		$isHuman = captcha_validate($this->request->data['CaptchaCode']);
+    		
+    		// clear previous user input, since each Captcha code can only be validated once
+    		unset($this->request->data['CaptchaCode']);
+    		
+    		if ($isHuman) {
+	    		$account = $this->Auth->identify();   		
+	    		if ($account) {
+	    			$this->Auth->setUser($account);
+	    			return $this->redirect(["controller" => "NCC", "action" => "index"]);
+	    		}
+	    		$this->Flash->error('Your username or password is incorrect.');
     		}
-    		$this->Flash->error('Your username or password is incorrect.');
     	}
     }
     
