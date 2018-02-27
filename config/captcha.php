@@ -22,6 +22,7 @@ return [
     'CodeLength' => CaptchaRandomization::GetRandomCodeLength(4, 7),
     'CodeStyle' => CodeStyle::Alpha,
     'CustomLightColor' => '#9966FF',
+  	'HelpLinkMode' => 'HelpLinkMode:Image'
   ],
   
 ];
