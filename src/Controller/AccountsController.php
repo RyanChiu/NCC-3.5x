@@ -31,11 +31,14 @@ class AccountsController extends AppController {
 	    		$account = $this->Auth->identify();   		
 	    		if ($account) {
 	    			$this->Auth->setUser($account);
-	    			return $this->redirect(["controller" => "NCC", "action" => "index"]);
+	    			return $this->redirect(["controller" => "Accounts", "action" => "index"]);
 	    		}
 	    		$this->Flash->error('Your username or password is incorrect.');
     		}
     	}
+    }
+    
+    public function index() {
     }
     
     public function logout(){
