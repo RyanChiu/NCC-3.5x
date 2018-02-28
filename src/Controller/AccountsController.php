@@ -9,6 +9,7 @@ class AccountsController extends AppController {
 	{
 		parent::initialize();
 		$this->loadModel("Bulletins");
+		$this->loadModel("Top10s");
 	}
     
     public function login() {
@@ -67,26 +68,36 @@ class AccountsController extends AppController {
 		);*/
 		$archdata = $this->Bulletins->find()
 			->select(['id', 'title', 'archdate'])
-			->where(['archdate not' => null])
+			->where(['archdate is not' => 'null'])
 			->order(['archdate' => 'desc'])
 			->all();
 		$this->set(compact('archdata'));
 		/*prepare the ALERTS for the current logged-in user*/
 		$info = array();
 		if ($id == null) {
+            /*
 			$info = $this->Bulletins->find('first',
 				array(
 					'fields' => array('info'),
 					'conditions' => array('archdate' => null)
 				)
-			);
+			);*/
+            $info = $this->Bulletins->find()
+                ->select(['info'])
+                ->where(['archdate' => 'null'])
+                ->first();
 		} else {
+            /*
 			$info = $this->Bulletin->find('first',
 				array(
 					'fields' => array('info'),
 					'conditions' => array('id' => $id)
 				)
-			);
+			);*/
+            $info = $this->Bulletins->find()
+                ->select(['info'])
+                ->where(['id' => $id])
+                ->first();
 		}
 		$this->set('topnotes',  empty($info) ? '...' : $info['Bulletin']['info']);
 		if ($this->Auth->user('Account.role') == 0) {//means an administrator
@@ -121,12 +132,17 @@ class AccountsController extends AppController {
 		//avoid those data which are not in types
 		$conds['startdate'] = '0000-00-00';
 		$conds['enddate'] = date('Y-m-d');
-		$rs = $this->Top10->find('all',
+		/*
+        $rs = $this->Top10->find('all',
 			array(
 				'conditions' => array('flag' => 0),
 				'order' => 'sales desc'
 			)
-		);
+		);*/
+        $rs = $this->Top10s->find()
+            ->where(['flag' => 0])
+            ->order(['sales' => 'desc'])
+            ->all();
 		$this->set(compact('rs'));
 		$weekend = date("Y-m-d", strtotime(date('Y-m-d') . " Saturday"));
 		$weekstart = date("Y-m-d", strtotime($weekend . " - 6 days"));
@@ -136,7 +152,7 @@ class AccountsController extends AppController {
 		$biweekend = $curbiweekse[1];
 		$conds['startdate'] = $weekstart;
 		$conds['enddate'] = $weekend;
-		$weekrs = $this->Top10->find('all',
+		$weekrs = $this->Top10s->find('all',
 			array(
 				'conditions' => array('flag' => 1),
 				'order' => 'sales desc'
