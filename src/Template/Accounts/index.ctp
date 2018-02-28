@@ -1,8 +1,6 @@
 <?php
 $userinfo = $Auth->user();
 ?>
-<?= print_r($someBulletins, true) ?>
-<?php exit();?>
 <div>
 <div style="float:left;"><h1>Home</h1></div>
 <div style="float:left;margin-left:10px;">
@@ -159,13 +157,13 @@ if (!empty($notes)) {
 		<tr>
 			<td align="center"><?php echo $i; ?></td>
 			<td align="center" style="font-size:8pt;">
-				<?php echo $r['Top10']['sales'] > 0 ? $r['Top10']['officename'] : $r['Top10']['officename']; ?>
+				<?php echo $r->sales > 0 ? $r->officename : $r->officename; ?>
 			</td>
 			<td align="center">
-				<font style="font-size: 9pt;"><?php echo $r['Top10']['username']; ?></font>
-				<font style="font-size: 10pt;"> (<?php echo $r['Top10']['ag1stname'] ?>)</font>
+				<font style="font-size: 9pt;"><?php echo $r->username; ?></font>
+				<font style="font-size: 10pt;"> (<?php echo $r->ag1stname ?>)</font>
 			</td>
-			<td align="center"><?php echo $r['Top10']['sales'] > 0 ? $r['Top10']['sales'] : '0'; ?></td>
+			<td align="center"><?php echo $r->sales > 0 ? $r->sales : '0'; ?></td>
 		</tr>
 		<?php
 		}
@@ -193,13 +191,13 @@ if (!empty($notes)) {
 		<tr>
 			<td align="center"><?php echo $i; ?></td>
 			<td align="center" style="font-size:8pt;">
-				<?php echo $r['Top10']['sales'] > 0 ? $r['Top10']['officename'] : $r['Top10']['officename']; ?>
+				<?php echo $r->sales > 0 ? $r->officename : $r->officename; ?>
 			</td>
 			<td align="center">
-				<font style="font-size: 9pt;"><?php echo $r['Top10']['username']; ?></font>
-				<font style="font-size: 10pt;"> (<?php echo $r['Top10']['ag1stname'] ?>)</font>
+				<font style="font-size: 9pt;"><?php echo $r->username; ?></font>
+				<font style="font-size: 10pt;"> (<?php echo $r->ag1stname ?>)</font>
 			</td>
-			<td align="center"><?php echo $r['Top10']['sales'] > 0 ? $r['Top10']['sales'] : '0'; ?></td>
+			<td align="center"><?php echo $r->sales > 0 ? $r->sales : '0'; ?></td>
 		</tr>
 		<?php
 		}
@@ -237,13 +235,13 @@ if ($userinfo['role'] != -1) {
 				?>
 				<tr>
 					<td align="center"><?php echo $i; ?></td>
-					<td align="center" style="font-size:8pt;"><?php echo $r['TrboTop10']['officename']; ?></td>
-					<td align="center"><?php echo $r['TrboTop10']['username'] . ' (' . $r['TrboTop10']['ag1stname'] . ')'; ?></td>
-					<td align="center"><?php echo $r['TrboTop10']['sales_trial']; ?></td>
-					<td align="center" style="color:red;"><?php echo $r['TrboTop10']['sales_bonus']; ?></td>
-					<td align="center"><?php echo $r['TrboTop10']['sales']; ?></td>
+					<td align="center" style="font-size:8pt;"><?php echo $r->officename; ?></td>
+					<td align="center"><?php echo $r->username . ' (' . $r->ag1stname . ')'; ?></td>
+					<td align="center"><?php echo $r->sales_trial; ?></td>
+					<td align="center" style="color:red;"><?php echo $r->sales_bonus; ?></td>
+					<td align="center"><?php echo $r->sales; ?></td>
 					<td align="center" style="color:red;">
-					<?php echo sprintf("%.2f", ($r['TrboTop10']['sales_bonus'] / $r['TrboTop10']['sales_trial'] * 100)); ?>%
+					<?php echo $r->sales_trial == 0 ? "-" : sprintf("%.2f", ($r->sales_bonus / $r->sales_trial * 100)); ?>%
 					</td>
 				</tr>
 				<?php
@@ -271,18 +269,18 @@ if ($userinfo['role'] != -1) {
 			?>
 			<tr>
 				<td align="center"><?php echo $i; ?></td>
-				<td align="center" style="font-size:8pt;"><?php echo $r['Top10']['officename']; ?></td>
-				<td align="center"><?php echo $r['Top10']['sales']; ?></td>
+				<td align="center" style="font-size:8pt;"><?php echo $r->officename; ?></td>
+				<td align="center"><?php echo $r->sales; ?></td>
 				<td align="center">
 				<?php
 				$sales0 = 0;
 				foreach ($biweekrs0 as $r0) {
-					if ($r0['Top10']['officename'] == $r['Top10']['officename']) {
-						$sales0 = $r0['Top10']['sales'];
+					if ($r0->officename == $r->officename) {
+						$sales0 = $r0->sales;
 						break;
 					}
 				}
-				$per = ($r['Top10']['sales'] - $sales0) / $sales0 * 100;
+				$per = ($r->sales - $sales0) / $sales0 * 100;
 				?>
 				<font style="<?php echo $per < 0 ? 'color:red' : ''; ?>">
 				<?php 

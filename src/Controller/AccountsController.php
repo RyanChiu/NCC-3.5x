@@ -10,6 +10,7 @@ class AccountsController extends AppController {
 		parent::initialize();
 		$this->loadModel("Bulletins");
 		$this->loadModel("Top10s");
+		$this->loadModel("TrboTop10s");
 	}
     
     public function login() {
@@ -160,6 +161,7 @@ class AccountsController extends AppController {
 		);
 		$conds['startdate'] = $biweekstart;
 		$conds['enddate'] = $biweekend;
+		/*
 		$biweekrs = $this->Top10->find('all',
 			array(
 				'conditions' => array('flag' => 3),
@@ -171,7 +173,15 @@ class AccountsController extends AppController {
 				'conditions' => array('flag' => 4),
 				'order' => 'sales desc'
 			)
-		);
+		);*/
+		$biweekrs = $this->Top10s->find()
+			->where(['flag' => 3])
+			->order(['sales' => 'desc'])
+			->all();
+		$biweekrs0 = $this->Top10s->find()
+			->where(['flag' => 4])
+			->order(['sales' => 'desc'])
+			->all();
 		$this->set(compact('weekrs'));
 		$this->set(compact('weekstart'));
 		$this->set(compact('weekend'));
@@ -183,6 +193,7 @@ class AccountsController extends AppController {
 		/*
 		 * trials and bonus top 10 for new style (2 steps) sales
 		 */
+		/*
 		$trbors = $this->TrboTop10->find('all',
 			array(
 				'conditions' => array('flag' => 0),
@@ -194,7 +205,15 @@ class AccountsController extends AppController {
 				'conditions' => array('flag' => 1),
 				'order' => 'sales desc'
 			)
-		);
+		);*/
+		$trbors = $this->TrboTop10s->find()
+			->where(['flag' => 0])
+			->order(['sales' => 'desc'])
+			->all();
+		$trboweekrs = $this->TrboTop10s->find()
+			->where(['flag' => 1])
+			->order(['sales' => 'desc'])
+			->all();
 		$this->set(compact('trbors'));
 		$this->set(compact('trboweekrs'));
     }

@@ -14,6 +14,8 @@
  */
 namespace App\Controller;
 
+require_once ROOT . DS . "vendor" . DS . "zrkits" . DS . "extrakits.inc.php";
+
 use Cake\Controller\Controller;
 use Cake\Event\Event;
 use Cake\ORM\TableRegistry;
