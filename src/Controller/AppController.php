@@ -74,7 +74,11 @@ class AppController extends Controller
         ]);
         // Allow the display action so our PagesController
         // continues to work. Also enable the read only actions.
-        $this->Auth->allow(['accounts/login', 'accounts/index']);
+        $this->Auth->allow(['accounts/login', 'accounts/logout', 'accounts/index']);
+    }
+    
+    public function beforeRender(Event $event) {
+    	$this->set('Auth', $this->Auth);
     }
 
     /**
