@@ -14,7 +14,7 @@
  */
 namespace App\Controller;
 
-require_once ROOT . DS . "vendor" . DS . "zrkits" . DS . "extrakits.inc.php";
+require_once ROOT . DS . "src" . DS . "Driver" . DS . "zrkits" . DS . "extrakits.inc.php";
 
 use Cake\Controller\Controller;
 use Cake\Event\Event;
