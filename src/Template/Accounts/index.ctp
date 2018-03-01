@@ -2,7 +2,6 @@
 $userinfo = $Auth->user();
 ?>
 <div>
-<div style="float:left;"><h1>Home</h1></div>
 <div style="float:left;margin-left:10px;">
 <?php
 if ($userinfo['role'] == 0) {
