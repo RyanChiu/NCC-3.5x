@@ -1,64 +1,60 @@
 <?php
 $userinfo = $Auth->user();
 ?>
-<div>
-<div style="float:left;margin-left:10px;">
-<?php
-if ($userinfo['role'] == 0) {
-	echo $this->Html->link(
-		/*$this->Html->image('archive.jpg',
-			array('border' => 0, 'width' => 25, 'height' => 25, 'alt' => 'Archive this bulletin.')
-		),// . */'<font size="1">(Archive)</font>',
-		array('controller' => 'accounts', 'action' => 'index', 'id' => -1),
-		array('escape'=> false),
-		'Are you sure you wish to archive this bulletin?'
-	);
-}
-?>
-</div>
-<div style="float:left;margin:0px 0px 5px 60px;;font-size:10px;">
-<?php
-if (!empty($archdata)) {
-	$i = 0;
-	echo '| ';
-	foreach ($archdata as $arch) {
+<span>
+	<?php
+	if ($userinfo['role'] == 0) {
 		echo $this->Html->link(
-			$arch['Bulletin']['archdate'],
-			array('controller' => 'accounts', 'action' => 'index', 'id' => $arch['Bulletin']['id']),
-			array('escape' => false),
-			false
+			'Archive',
+			array('controller' => 'accounts', 'action' => 'index', 'id' => -1),
+			['class' => 'link', 'confirm' => 'Are you sure you wish to archive this bulletin?']
 		);
-		echo ' | ';
-		$i++;
-		if ($i > 1) break;
 	}
-	$more = '';
-	if ($i <= count($archdata) - 1) {
-		$more = '<a href="#" id="linkMore">(' . (count($archdata) - $i) . ') more...</a>';
+	?>
+</span>
+<span>
+	<?php
+	if (!empty($archdata)) {
+		$i = 0;
+		echo '| ';
+		foreach ($archdata as $arch) {
+			echo $this->Html->link(
+				$arch->archdate,
+				array('controller' => 'accounts', 'action' => 'index', 'id' => $arch->id),
+				array('escape' => false),
+				false
+			);
+			echo ' | ';
+			$i++;
+			if ($i > 1) break;
+		}
+		$more = '';
+		if ($i <= count($archdata) - 1) {
+			$more = '<a href="#" id="linkMore">(' . (count($archdata) - $i) . ') more...</a>';
+		}
+		echo $more;
+		//echo $this->Html->image('archive_tip.jpg', array('border' => 0, 'width' => 70, 'height' => 23));
+	?>
+		<div id="divMore" style="margin:3px 2px 3px 0px;display:none;">
+		<?php
+		/*list all the rest archives*/
+		$k = 0; $step = 4;
+		for ($j = $i; $j < count($archdata); $j++) {
+			echo ($k % $step == 0) ? ' | ' : '';
+			echo $this->Html->link(
+				$archdata[$j]->archdate,
+				array('controller' => 'accounts', 'action' => 'index', 'id' => $archdata[$j]->id),
+				array('escape' => false),
+				false
+			);
+			$k++;
+			echo ($k % $step == 0 && $k != count($archdata)) ? ' | <br/>' : ' | ';
+		}
+		?>
+		</div>
+	<?php
 	}
-	echo $more;
-	//echo $this->Html->image('archive_tip.jpg', array('border' => 0, 'width' => 70, 'height' => 23));
-?>
-	<div id="divMore" style="margin:3px 2px 3px 0px;display:none;">
-<?php
-	/*list all the rest archives*/
-	$k = 0; $step = 4;
-	for ($j = $i; $j < count($archdata); $j++) {
-		echo ($k % $step == 0) ? ' | ' : '';
-		echo $this->Html->link(
-			$archdata[$j]['Bulletin']['archdate'],
-			array('controller' => 'accounts', 'action' => 'index', 'id' => $archdata[$j]['Bulletin']['id']),
-			array('escape' => false),
-			false
-		);
-		$k++;
-		echo ($k % $step == 0 && $k != count($archdata)) ? ' | <br/>' : ' | ';
-	}
-?>
-	</div>
-<?php
-}
-?>
+	?>
 	<script type="text/javascript">
 	jQuery("#linkMore").click(
 		function() {
@@ -73,26 +69,20 @@ if (!empty($archdata)) {
 		}
 	);
 	</script>
-</div>
-</div>
+</span>
 
-<br/>
-
+<div class="row">
 <?php
 echo $this->element('timezoneblock');
 ?>
+</div>
 
-<br/>
 <table style="width:100%">
 <!-- <tr class="odd"> -->
 <tr>
 	<td>
 	<div style="margin:5px 20px 5px 20px;">
-	<?php
-	//echo $this->Html->image('iconTopnotes.png');
-	//echo '<b><font size="3">News</font></b>';
-	echo /*'<br/>' . */$topnotes;
-	?>
+	<?= $topnotes ?>
 	<div style="height:6px"></div>
 	</div>
 	</td>
@@ -116,7 +106,6 @@ if (!empty($notes)) {
 </table>
 
 <!-- show the top selling list -->
-<br/>
 <table style="width:100%;font-size:9pt;">
 <caption><font size="5" color="#bb2222">Best sellers</font></caption>
 <tr>

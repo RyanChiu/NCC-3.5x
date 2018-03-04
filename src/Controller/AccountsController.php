@@ -46,8 +46,9 @@ class AccountsController extends AppController {
     }
     
     public function index($id = null) {
+    	$userinfo = $this->Auth->user();
 		/*try to archive the bulletin*/
-		if ($id == -1 && $this->Auth->user('Account.role') == 0) {
+		if ($id == -1 && $userinfo['role'] == 0) {
 			$this->Bulletin->updateAll(
 				array('archdate' => "'" . date('Y-m-d h:i:s') . "'"),
 				array('archdate' => null)
@@ -74,7 +75,7 @@ class AccountsController extends AppController {
 			->all();
 		$this->set(compact('archdata'));
 		/*prepare the ALERTS for the current logged-in user*/
-		$info = array();
+		$info = '';
 		if ($id == null) {
             /*
 			$info = $this->Bulletins->find('first',
@@ -100,31 +101,48 @@ class AccountsController extends AppController {
                 ->where(['id' => $id])
                 ->first();
 		}
-		$this->set('topnotes',  empty($info) ? '...' : $info['Bulletin']['info']);
-		if ($this->Auth->user('Account.role') == 0) {//means an administrator
+		$this->set('topnotes',  empty($info) ? '...' : $info->info);
+		if ($userinfo['role'] == 0) {//means an administrator
 			$this->set('notes', '');//set the additional notes here
-		} else if ($this->Auth->user('Account.role') == 1) {//means a company
+		} else if ($userinfo['role'] == 1) {//means a company
+			/*
 			$cominfo = $this->Company->find('first',
 				array(
 					'fields' => array('agentnotes'),
 					'conditions' => array('id' => $this->Auth->user('Account.id'))
 				)
 			);
+			*/
+			$cominfo = $this->Company->find()
+				->select(['agentnotes'])
+				->where(['id' => $userinfo['id']])
+				->first();
 			$this->set('notes', '');//set the additional notes here
 		} else {//means an agent
+			/*
 			$aginfo = $this->Agent->find('first',
 				array(
 					'fields' => array('companyid'),
 					'conditions' => array('id' => $this->Auth->user('Account.id'))
 				)
-			);
+			);*/
+			$aginfo = $this->Agent->find()
+				->select(['companyid'])
+				->where(['id' => $userinfo['id']])
+				->first();
+			/*
 			$cominfo = $this->Company->find('first',
 				array(
 					'fileds' => array('agentnotes'),
 					'conditions' => array('id' => $aginfo['Agent']['companyid'])
 				)
-			);
-			$this->set('notes', '<font size="3"><b>Office news&nbsp;&nbsp;</b></font>' . $cominfo['Company']['agentnotes']);
+			);*/
+			$cominfo = $this->Company->find()
+				->select(['agentnotes'])
+				->where(['id' => $aginfo->companyid])
+				->first();
+			$this->set('notes', '<font size="3"><b>Office news&nbsp;&nbsp;</b></font>' 
+				. $cominfo['Company']['agentnotes']);
 		}
 		
 		/*
