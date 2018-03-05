@@ -44,6 +44,7 @@ $curmenuidx = 0;
     <?= $this->Html->css('bootstrap.min.css') ?>
     <?= $this->Html->script('jquery-1.12.4.min.js') ?>
     <?= $this->Html->script('bootstrap.min.js') ?>
+    <?= $this->Html->script('ckeditor/ckeditor.js') ?>
     <?= $this->Html->script('zrkits/extrakits.inc.js') ?>
     
     <!-- include the BotDetect layout stylesheet -->
@@ -55,7 +56,8 @@ $curmenuidx = 0;
     if ($userinfo) {
 	    echo $this->Navbar->create($this->Html->icon('home') . ' HOME', ['fluid' => true, 'inverse' => true, 'style' => 'margin-bottom:0;']);
 		    echo $this->Navbar->beginMenu();
-			    echo $this->Navbar->beginMenu('NEWS', '/accounts/news');
+			    echo $this->Navbar->beginMenu('NEWS');
+			    	echo $this->Navbar->link("ADD NEWS", '/accounts/updnews');
 			   		echo $this->Navbar->link('ALERTS', '/');
 			    echo $this->Navbar->endMenu();
 			    echo $this->Navbar->beginMenu('OFFICE', '/accounts/office');
@@ -107,6 +109,7 @@ $curmenuidx = 0;
     <!-- js scripts -->
     <script type="text/javascript">
     __zShowClock();
+    jQuery("[href='/']").attr("href", "/accounts");
     </script>
 </body>
 </html>

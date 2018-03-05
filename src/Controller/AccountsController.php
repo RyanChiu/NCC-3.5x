@@ -2,6 +2,7 @@
 namespace App\Controller;
 
 use App\Controller\AppController;
+use Cake\ORM\TableRegistry;
 
 class AccountsController extends AppController {
 	
@@ -70,12 +71,13 @@ class AccountsController extends AppController {
 		);*/
 		$archdata = $this->Bulletins->find()
 			->select(['id', 'title', 'archdate'])
-			->where(['archdate is not' => 'null'])
+			->where(['archdate is not' => null])
 			->order(['archdate' => 'desc'])
 			->all();
 		$this->set(compact('archdata'));
 		/*prepare the ALERTS for the current logged-in user*/
-		$info = '';
+		
+		$data = '';
 		if ($id == null) {
             /*
 			$info = $this->Bulletins->find('first',
@@ -84,10 +86,10 @@ class AccountsController extends AppController {
 					'conditions' => array('archdate' => null)
 				)
 			);*/
-            $info = $this->Bulletins->find()
-                ->select(['info'])
-                ->where(['archdate' => 'null'])
-                ->first();
+            $data = $this->Bulletins->find()
+				->select(['id', 'info'])
+				->where(['archdate is not' => null])
+				->first();
 		} else {
             /*
 			$info = $this->Bulletin->find('first',
@@ -96,12 +98,12 @@ class AccountsController extends AppController {
 					'conditions' => array('id' => $id)
 				)
 			);*/
-            $info = $this->Bulletins->find()
+            $data = $this->Bulletins->find()
                 ->select(['info'])
                 ->where(['id' => $id])
                 ->first();
 		}
-		$this->set('topnotes',  empty($info) ? '...' : $info->info);
+		$this->set('topnotes',  empty($data) ? '...' : $data->info);
 		if ($userinfo['role'] == 0) {//means an administrator
 			$this->set('notes', '');//set the additional notes here
 		} else if ($userinfo['role'] == 1) {//means a company
@@ -238,6 +240,36 @@ class AccountsController extends AppController {
     
     public function logout(){
     	return $this->redirect($this->Auth->logout());
+    }
+    
+    public function updnews() {
+    	if (empty($this->request->getData())) {
+    		/*prepare the notes for the current logged in user*/
+    		/*
+    		$info = $this->Bulletin->find('first',
+    				array(
+    						'fields' => array('id', 'info'),
+    						'conditions' => array('archdate' => null)
+    				)
+    		);*/
+    		$data = $this->Bulletins->find()
+    			->select(['id', 'info'])
+    			->where(['archdate is not' => null])
+    			->first();
+    		$this->set(compact('data'));
+    	} else {
+    		$id = $this->request->getData('id');
+    		$bulletinsTable = TableRegistry::get("Bulletins");
+    		$bulletin = $bulletinsTable->get($id);
+    		$bulletin->info = $this->request->getData('info');
+    		
+    		if ($bulletinsTable->save($bulletin)) {
+    			//$this->Session->setFlash('ALERTS updated.');
+    			$this->redirect(['controller' => 'accounts', 'action' => 'index']);
+    		} else {
+    			$this->Session->setFlash("Something wrong, please contact your administrator.");
+    		}
+    	}
     }
 }
 ?>

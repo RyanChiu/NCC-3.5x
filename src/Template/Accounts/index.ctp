@@ -6,7 +6,7 @@ $userinfo = $Auth->user();
 	if ($userinfo['role'] == 0) {
 		echo $this->Html->link(
 			'Archive',
-			array('controller' => 'accounts', 'action' => 'index', 'id' => -1),
+			['controller' => 'accounts', 'action' => 'index', -1],
 			['class' => 'link', 'confirm' => 'Are you sure you wish to archive this bulletin?']
 		);
 	}
