@@ -13,6 +13,8 @@ class AccountsController extends AppController {
 		$this->loadModel("Top10s");
 		$this->loadModel("TrboTop10s");
 		$this->loadModel("Admins");
+		$this->loadModel("Companies");
+		$this->loadModel("Agents");
 	}
     
     public function login() {
@@ -119,7 +121,7 @@ class AccountsController extends AppController {
 				)
 			);
 			*/
-			$cominfo = $this->Company->find()
+			$cominfo = $this->Companies->find()
 				->select(['agentnotes'])
 				->where(['id' => $userinfo['id']])
 				->first();
@@ -132,7 +134,7 @@ class AccountsController extends AppController {
 					'conditions' => array('id' => $this->Auth->user('Account.id'))
 				)
 			);*/
-			$aginfo = $this->Agent->find()
+			$aginfo = $this->Agents->find()
 				->select(['companyid'])
 				->where(['id' => $userinfo['id']])
 				->first();
@@ -143,7 +145,7 @@ class AccountsController extends AppController {
 					'conditions' => array('id' => $aginfo['Agent']['companyid'])
 				)
 			);*/
-			$cominfo = $this->Company->find()
+			$cominfo = $this->Companies->find()
 				->select(['agentnotes'])
 				->where(['id' => $aginfo->companyid])
 				->first();
