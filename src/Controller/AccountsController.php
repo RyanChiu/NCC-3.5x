@@ -12,6 +12,7 @@ class AccountsController extends AppController {
 		$this->loadModel("Bulletins");
 		$this->loadModel("Top10s");
 		$this->loadModel("TrboTop10s");
+		$this->loadModel("Admins");
 	}
     
     public function login() {
@@ -41,23 +42,26 @@ class AccountsController extends AppController {
 	    			$this->Auth->setUser($account);
 	    			return $this->redirect(["controller" => "accounts", "action" => "index"]);
 	    		}
-	    		$this->Flash->error('Your username or password is incorrect.');
+	    		$this->Flash->set('Your username or password is incorrect.', ['element' => 'error']);
     		}
     	}
     }
     
-    public function index($id = null) {
+    public function index($id = null, $b_id = null) {
     	$userinfo = $this->Auth->user();
 		/*try to archive the bulletin*/
 		if ($id == -1 && $userinfo['role'] == 0) {
-			$this->Bulletin->updateAll(
-				array('archdate' => "'" . date('Y-m-d h:i:s') . "'"),
-				array('archdate' => null)
-			);
-			if ($this->Bulletin->getAffectedRows() > 0) {
-				$this->Session->setFlash("Bulletin archived.");
+			$bulletinsTable = TableRegistry::get("Bulletins");
+			$curBulletin = $bulletinsTable->get($b_id);
+			$bulletin = $bulletinsTable->newEntity();
+			$bulletin->archdate = date('Y-m-d h:i:s');
+			$bulletin->info = $curBulletin->info;
+			
+			if ($bulletinsTable->save($bulletin)) {
+				$this->Flash->set("Bulletin archived.", ['element' => 'success']);
+				$this->redirect(['controller' => 'accounts', 'action' => 'index']);
 			} else {
-				$this->Session->setFlash("No current bulletin exists.");
+				$this->Flash->set("No current bulletin exists.", ['element' => 'error']);
 			}
 		}
 		/*prepare the historical bulletins*/
@@ -99,11 +103,11 @@ class AccountsController extends AppController {
 				)
 			);*/
             $data = $this->Bulletins->find()
-                ->select(['info'])
+                ->select(['id', 'info'])
                 ->where(['id' => $id])
                 ->first();
 		}
-		$this->set('topnotes',  empty($data) ? '...' : $data->info);
+		$this->set('topnotes',  $data);
 		if ($userinfo['role'] == 0) {//means an administrator
 			$this->set('notes', '');//set the additional notes here
 		} else if ($userinfo['role'] == 1) {//means a company
@@ -264,10 +268,33 @@ class AccountsController extends AppController {
     		$bulletin->info = $this->request->getData('info');
     		
     		if ($bulletinsTable->save($bulletin)) {
-    			//$this->Session->setFlash('ALERTS updated.');
+    			$this->Flash->set("NEWS updated", ['element' => 'success']);
     			$this->redirect(['controller' => 'accounts', 'action' => 'index']);
     		} else {
-    			$this->Session->setFlash("Something wrong, please contact your administrator.");
+    			$this->Flash->set("Something wrong, please contact your administrator.", ['element' => 'error']);
+    		}
+    	}
+    }
+    
+    function updalerts() {
+    	/*prepare the notes for the current logged in user*/
+    	$adminsTable = TableRegistry::get("Admins");
+    	$admin = $adminsTable->get(1); //HARD CODE: we put the alerts into here
+    	$this->set(compact('admin'));
+    	if (empty($this->request->getData())) {
+    		//$this->Admin->id = 1;//HARD CODE: we put the alerts into here
+    		//$this->request->data = $this->Admin->read();
+    		if (empty($admin)) {
+    			$this->Flash->set('Please create your first admin account, so we could continue the alerts setup.');
+    			$this->redirect(array('controller' => 'accounts', 'action' => 'index'));
+    		}
+    	} else {
+    		$admin->notes = $this->request->getData("notes");
+    		if ($adminsTable->save($admin)) {
+    			$this->Flash->set('Alerts updated.', ['element' => 'success']);
+    			$this->redirect(array('controller' => 'accounts', 'action' => 'index'));
+    		} else {
+    			$this->Flash->set("Something wrong, please contact your administrator.", ['element' => 'error']);
     		}
     	}
     }

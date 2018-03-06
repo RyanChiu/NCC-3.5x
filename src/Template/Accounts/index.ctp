@@ -6,7 +6,7 @@ $userinfo = $Auth->user();
 	if ($userinfo['role'] == 0) {
 		echo $this->Html->link(
 			'Archive',
-			['controller' => 'accounts', 'action' => 'index', -1],
+			['controller' => 'accounts', 'action' => 'index', -1, empty($topnotes) ? null : $topnotes->id],
 			['class' => 'link', 'confirm' => 'Are you sure you wish to archive this bulletin?']
 		);
 	}
@@ -20,7 +20,7 @@ $userinfo = $Auth->user();
 		foreach ($archdata as $arch) {
 			echo $this->Html->link(
 				$arch->archdate,
-				array('controller' => 'accounts', 'action' => 'index', 'id' => $arch->id),
+				['controller' => 'accounts', 'action' => 'index', $arch->id],
 				array('escape' => false),
 				false
 			);
@@ -43,7 +43,7 @@ $userinfo = $Auth->user();
 			echo ($k % $step == 0) ? ' | ' : '';
 			echo $this->Html->link(
 				$archdata[$j]->archdate,
-				array('controller' => 'accounts', 'action' => 'index', 'id' => $archdata[$j]->id),
+				['controller' => 'accounts', 'action' => 'index', $archdata[$j]->id],
 				array('escape' => false),
 				false
 			);
@@ -82,7 +82,7 @@ echo $this->element('timezoneblock');
 <tr>
 	<td>
 	<div style="margin:5px 20px 5px 20px;">
-	<?= $topnotes ?>
+	<?= empty($topnotes)? "empty" : $topnotes->info ?>
 	<div style="height:6px"></div>
 	</div>
 	</td>

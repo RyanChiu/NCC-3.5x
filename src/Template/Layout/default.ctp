@@ -57,8 +57,8 @@ $curmenuidx = 0;
 	    echo $this->Navbar->create($this->Html->icon('home') . ' HOME', ['fluid' => true, 'inverse' => true, 'style' => 'margin-bottom:0;']);
 		    echo $this->Navbar->beginMenu();
 			    echo $this->Navbar->beginMenu('NEWS');
-			    	echo $this->Navbar->link("ADD NEWS", '/accounts/updnews');
-			   		echo $this->Navbar->link('ALERTS', '/');
+			    	echo $this->Navbar->link("UPDATE NEWS", '/accounts/updnews');
+			   		echo $this->Navbar->link('ALERTS', '/accounts/updalerts');
 			    echo $this->Navbar->endMenu();
 			    echo $this->Navbar->beginMenu('OFFICE', '/accounts/office');
 			    	echo $this->Navbar->link('MANAGE OFFICE', '/');
@@ -102,8 +102,8 @@ $curmenuidx = 0;
         <?= $this->fetch('content') ?>
         <?= $this->Panel->footer() ?>
         <?= $this->Html->icon('stats'); ?>
-        <?= "<div style='float:right'>Copyright &copy; 2015 www.NinjasChatClub.com All
-					Rights Reserved.</div>" ?>
+        <?= "<div style='float:right'>Copyright &copy; 
+			2015 www.NinjasChatClub.com All Rights Reserved.</div>" ?>
     <?= $this->Panel->end() ?>
     
     <!-- js scripts -->
