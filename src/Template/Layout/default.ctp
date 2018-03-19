@@ -19,9 +19,6 @@ $role = -1;//means everyone
 if ($userinfo) {
 	$role = $userinfo['role'];
 }
-
-$menuitemscount = 0;
-$curmenuidx = 0;
 ?>
 <!DOCTYPE html>
 <html>
@@ -42,19 +39,22 @@ $curmenuidx = 0;
     <?= $this->fetch('script') ?>
     
     <?= $this->Html->css('bootstrap.min.css') ?>
-    <?= $this->Html->script('jquery-1.12.4.min.js') ?>
+    <?= $this->Html->css('jquery.fancybox.min.css') ?>
+    <?= $this->Html->script('jquery-3.2.1.min.js') ?>
     <?= $this->Html->script('bootstrap.min.js') ?>
     <?= $this->Html->script('ckeditor/ckeditor.js') ?>
     <?= $this->Html->script('zrkits/extrakits.inc.js') ?>
+    <?= $this->Html->script('jquery.fancybox.min.js') ?>
     
     <!-- include the BotDetect layout stylesheet -->
 	<?= $this->Html->css(captcha_layout_stylesheet_url(), ['inline' => false]) ?>
     
 </head>
 <body style="background-color:black;">
-    <?php 
+    <?php //echo "<font color='red'>here@" . print_r($mustread, true) . "</font>";
     if ($userinfo) {
-	    echo $this->Navbar->create($this->Html->icon('home') . ' HOME', ['fluid' => true, 'inverse' => true, 'style' => 'margin-bottom:0;']);
+	    echo $this->Navbar->create($this->Html->icon('home') . ' HOME', 
+	    	['fluid' => true, 'inverse' => true, 'style' => 'margin-bottom:0;']);
 		    echo $this->Navbar->beginMenu();
 			    echo $this->Navbar->beginMenu('NEWS');
 			    	echo $this->Navbar->link("UPDATE NEWS", '/accounts/updnews');
@@ -82,7 +82,9 @@ $curmenuidx = 0;
 			    echo $this->Navbar->link('PROFILE', '/');
 			    echo $this->Navbar->link('HOW TO SELL', '/');
 		    echo $this->Navbar->endMenu();
-		    echo $this->Navbar->text('<a href="/accounts/logout">' 
+		    echo $this->Navbar->text(
+		    	$this->Html->icon('user') . $userinfo['username'] . '&nbsp;&nbsp;&nbsp;&nbsp;'
+		    	. '<a href="/accounts/logout">' 
 		    	. $this->Html->icon('log-out') . 'Log Out</a>'
 		    		. '<br/>'
 		    		. '<label id="lblClock" style="color:white;margin-top:2px;padding:0;"></label>', 
@@ -106,10 +108,119 @@ $curmenuidx = 0;
 			2015 www.NinjasChatClub.com All Rights Reserved.</div>" ?>
     <?= $this->Panel->end() ?>
     
+    <!-- popup attention message part -->
+	<div style="display:none;width:800px;" id="attentions_for_agents">
+		<p style="padding: 3px;">
+			<?php 
+			echo !empty($alerts) ? $alerts->notes : '';
+			?>
+		</p>
+
+		<hr style="margin: 6px 0px 6px 0px" />
+		<hr style="margin: 6px 0px 6px 0px" />
+
+		<?php
+		if (!empty($excludedsites)) {
+		?>
+		<p style="font-weight: bold; font-size: 14px; color: red;">
+			YOUR
+			<?php echo '"' . implode("\", \"", $excludedsites) . '"'; ?>
+			LINKS HAVE BEEN SUSPENDED, PLEASE CONTACT <a
+				href="mailto:SUPPORT@ninjaschatclub.com"><font color="red">NinjasChatClub
+					SUPPORT</font> </a> FOR MORE INFO.<br /> <a
+				href="mailto:SUPPORT@ninjaschatclub.com"><font color="red">SUPPORT@ninjaschatclub.com</font>
+			</a>
+		</p>
+		<div style="margin: 12px 2px 2px 2px; font-weight: bolder;">REASONS
+			FOR TEMPORARY SUSPENSION</div>
+		<p style="font-size: 14px; color: red;">
+			<br/>
+			1.SENDING LOW QUALITY SALES,  CUSTOMERS WHO DO NOT SPEND MONEY.<br/><br/>
+			2.CREATING FAKE ACCOUNTS.<br/><br/>
+			3.USING STOLEN CARDS.<br/><br/>
+			4.TELLING CUSTOMER SITE IS FREE.<br/><br/>
+			5.TELLING CUSTOMER YOU WILL MEET HIM.<br/>
+		</p>
+		<?php
+		}
+		?>
+
+		<p style="text-align: center; margin: 9px 0px 0px 9px;">
+			<?php
+			echo $this->Html->link('<font style="font-weight:bold;font-size:36px;color:red;">ENTER</font>',
+				"#",
+				array('onclick' => 'javascript:jQuery.fancybox.close();jQuery.post(\'' 
+					. 'accounts/pass' 
+					. '\', function(data) {});',
+					'escape' => false
+				),
+				false
+			);
+			?>
+		</p>
+	</div>
+	
+	<!-- for "agent must read" -->
+	<div id="mustread_for_agents" style="display:none; width:500px;">
+	<?php
+	if (isset($mustread) && !empty($mustread)) {
+		echo $mustread;
+	?>
+		<hr style="margin: 6px 0px 6px 0px" />
+		<hr style="margin: 6px 0px 6px 0px" />
+		<p style="text-align:center;color:red;font-size:10pt;margin:9px 0px 0px 9px;">
+		If you have any questions, "YOU ARE" welcome to email us: Support@NinjasChatClub.Com.
+		</p>
+		<p style="text-align: center; margin: 9px 0px 0px 9px;">
+		<?php
+		echo $this->Html->link('<font style="font-weight:bold;">I\'ve read it, please let me in.</font>',
+			"#",
+			array('onclick' => 'javascript:jQuery(\'a#mustread_for_agents\').hide();javascript:jQuery.fancybox.close();;',
+				'escape' => false
+			),
+			false
+		);
+		?>
+		</p>
+	<?php 
+	}
+	?>
+	</div>
+    
     <!-- js scripts -->
     <script type="text/javascript">
     __zShowClock();
     jQuery("[href='/']").attr("href", "/accounts");
+
+    jQuery(document).ready(function() {
+        <?php 
+        if ($userinfo && !$this->request->session()->check('switch_pass')) {
+        ?>
+			jQuery.fancybox.open({
+				'src' : '#attentions_for_agents',
+				'type' : 'inline',
+				'modal': true
+			});
+			<?php 
+			if (isset($mustread) && !empty($mustread)) {
+			?>
+			jQuery.fancybox.open({
+				'src' : '#mustread_for_agents',
+				'type': 'inline',
+				'modal': true
+			});
+			//jQuery("a#mustread_link").click();
+			<?php 
+			} else {
+			?>
+			//jQuery("a#attentions_link").click();
+			<?php 
+			}
+			?>
+		<?php 
+		}
+		?>
+	});
     </script>
 </body>
 </html>

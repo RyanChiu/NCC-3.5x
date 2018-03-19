@@ -215,3 +215,7 @@ Plugin::load('CakeCaptcha', ['routes' => true]);
 if (Configure::read('debug')) {
     Plugin::load('DebugKit', ['bootstrap' => true]);
 }
+
+if (!defined('LOCATE_COOKIE_NAME')) {
+	define('LOCATE_COOKIE_NAME', 'Locate_Cookie_Name');
+}

@@ -12,9 +12,7 @@ class AccountsController extends AppController {
 		$this->loadModel("Bulletins");
 		$this->loadModel("Top10s");
 		$this->loadModel("TrboTop10s");
-		$this->loadModel("Admins");
 		$this->loadModel("Companies");
-		$this->loadModel("Agents");
 	}
     
     public function login() {
@@ -245,7 +243,13 @@ class AccountsController extends AppController {
     }
     
     public function logout(){
+    	$this->request->session()->destroy();
     	return $this->redirect($this->Auth->logout());
+    }
+    
+    function pass() {
+    	$this->autoRender = false;
+    	$this->request->session()->write(['switch_pass' => 1]);
     }
     
     public function updnews() {
