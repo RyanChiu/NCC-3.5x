@@ -6,13 +6,19 @@ use Cake\ORM\TableRegistry;
 
 class AccountsController extends AppController {
 	
+	public $__limit = 10;
+	
 	public function initialize()
 	{
 		parent::initialize();
+		$this->loadModel("Accounts");
 		$this->loadModel("Bulletins");
 		$this->loadModel("Top10s");
 		$this->loadModel("TrboTop10s");
 		$this->loadModel("Companies");
+		$this->loadModel("ViewCompanies");
+		
+		$this->loadComponent('Paginator');
 	}
     
     public function login() {
@@ -303,6 +309,49 @@ class AccountsController extends AppController {
     			$this->Flash->set("Something wrong, please contact your administrator.", ['element' => 'error']);
     		}
     	}
+    }
+    
+    function lstcompanies($id = null) {
+    	/*prepare for the searching part*/
+    	if (!empty($this->request->getData())) {
+    		$username = $this->request->getData('username');
+    		if (strlen($username) == 0 && empty($username)) {
+    			$conditions = ['1' => '1'];
+    		} else {
+    			$conditions = [
+    				'username like' => ('%' . $username . '%')
+    			];
+    		}
+    	} else {
+    		if ($id == null || !is_numeric($id)) {
+    			if ($this->request->session()->check('conditions_com')) {
+    				$conditions = $this->request->session()->read('conditions_com');
+    			} else {
+    				$conditions = ['1' => '1'];
+    			}
+    		} else {
+    			if ($id != -1) {
+    				$conditions = ['companyid' => $id];
+    			} else {//"-1" is specially for the administrator
+    				$conditions = ['1' => '1'];
+    			}
+    		}
+    	}
+    
+    	$this->request->session()->write(['conditions_com' => $conditions]);
+    
+    	$this->paginate = [
+    		'limit' => $this->__limit,
+    		'order' => ['regtime desc']
+    	];
+    	$query = $this->ViewCompanies->find()
+    		->where($conditions);
+    
+    	$this->set('status', $this->Accounts->status);
+    	$this->set('online', $this->Accounts->online);
+    	$this->set('rs',
+    		$this->paginate($query)
+    	);
     }
 }
 ?>

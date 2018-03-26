@@ -60,8 +60,8 @@ if ($userinfo) {
 			    	echo $this->Navbar->link("UPDATE NEWS", '/accounts/updnews');
 			   		echo $this->Navbar->link('ALERTS', '/accounts/updalerts');
 			    echo $this->Navbar->endMenu();
-			    echo $this->Navbar->beginMenu('OFFICE', '/accounts/office');
-			    	echo $this->Navbar->link('MANAGE OFFICE', '/');
+			    echo $this->Navbar->beginMenu('OFFICE');
+			    	echo $this->Navbar->link('MANAGE OFFICE', '/accounts/lstcompanies/-1');
 			    echo $this->Navbar->endMenu();
 			    echo $this->Navbar->beginMenu('AGENT', '/accounts/agent');
 			    	echo $this->Navbar->link('MANAGE AGENT', '/');
