@@ -3,11 +3,14 @@ table th {
 	background-color: #bdcedf;
 	font-weight: bold;
 	color: #0080ff;
+	text-align: center;
+	font-size: 100% !important;
 }
 table tr.odd {
 	background-color: #112233;
 }
 table td {
+	padding: 4px;
 	color: white;
 }
 table caption {
