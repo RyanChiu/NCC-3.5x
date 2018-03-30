@@ -125,7 +125,7 @@ if (!empty($notes)) {
 </tr>
 <tr>
 	<td width="50%">
-		<table style="width:100%">
+		<table style="width:100%" class="table table-condensed">
 		<caption style="font-style:italic;">
 		<font style="font-weight:bold;color:red;">WEEKLY TOP 10 AGENTS</font> (From <?php echo $weekstart; ?> To <?php echo $weekend; ?>)		
 		</caption>
@@ -159,7 +159,7 @@ if (!empty($notes)) {
 		</table>
 	</td>
 	<td>
-		<table style="width:100%">
+		<table style="width:100%" class="table table-condensed">
 		<caption style="font-style:italic;">
 		<font style="font-weight:bold;color:#0066dd;">ALL TIME TOP 10 AGENTS</font> (Start from 2016-08-14)
 		</caption>
@@ -201,7 +201,7 @@ if ($userinfo['role'] != -1) {
 		<table style="border:0;width:100%;">
 		<tr>
 			<td style="width:65%">
-				<table style="width:100%;">
+				<table style="width:100%;" class="table table-condensed">
 				<caption style="font-style:italic;">
 				<font style="font-weight:bold;color:yellow;">Weekly NTCP + SXUP</font> (From <?php echo $weekstart; ?> To <?php echo $weekend; ?>)
 				</caption>
@@ -238,49 +238,49 @@ if ($userinfo['role'] != -1) {
 				</table>
 			</td>
 			<td style="width:35%;">
-			<table style="width:100%;">
-			<caption style="font-style:italic;">
-				<font style="font-weight:bold;color:#00ff33;">BiWeekly office</font><font style="font-size:9pt;">(From <?php echo $biweekstart; ?> To <?php echo $biweekend; ?>)</font>
-			</caption>
-			<thead>
-			<tr>
-				<th>Rank</th>
-				<th>Office</th>
-				<th>Sales</th>
-				<th>Growth</th>
-			</tr>
-			</thead>
-			<?php 
-			$i = 0;
-			foreach ($biweekrs as $r) {
-				$i++;
-			?>
-			<tr>
-				<td align="center"><?php echo $i; ?></td>
-				<td align="center" style="font-size:8pt;"><?php echo $r->officename; ?></td>
-				<td align="center"><?php echo $r->sales; ?></td>
-				<td align="center">
-				<?php
-				$sales0 = 0;
-				foreach ($biweekrs0 as $r0) {
-					if ($r0->officename == $r->officename) {
-						$sales0 = $r0->sales;
-						break;
-					}
-				}
-				$per = ($r->sales - $sales0) / $sales0 * 100;
-				?>
-				<font style="<?php echo $per < 0 ? 'color:red' : ''; ?>">
+				<table style="width:100%;" class="table table-condensed">
+				<caption style="font-style:italic;">
+					<font style="font-weight:bold;color:#00ff33;">BiWeekly office</font><font style="font-size:9pt;">(From <?php echo $biweekstart; ?> To <?php echo $biweekend; ?>)</font>
+				</caption>
+				<thead>
+				<tr>
+					<th>Rank</th>
+					<th>Office</th>
+					<th>Sales</th>
+					<th>Growth</th>
+				</tr>
+				</thead>
 				<?php 
-				echo ($per > 0 ? "+" : "") . sprintf("%.2f", $per) . "%";
+				$i = 0;
+				foreach ($biweekrs as $r) {
+					$i++;
 				?>
-				</font>
-				</td>
-			</tr>
-			<?php 
-			}
-			?>
-			</table>
+				<tr>
+					<td align="center"><?php echo $i; ?></td>
+					<td align="center" style="font-size:8pt;"><?php echo $r->officename; ?></td>
+					<td align="center"><?php echo $r->sales; ?></td>
+					<td align="center">
+					<?php
+					$sales0 = 0;
+					foreach ($biweekrs0 as $r0) {
+						if ($r0->officename == $r->officename) {
+							$sales0 = $r0->sales;
+							break;
+						}
+					}
+					$per = ($r->sales - $sales0) / $sales0 * 100;
+					?>
+					<font style="<?php echo $per < 0 ? 'color:red' : ''; ?>">
+					<?php 
+					echo ($per > 0 ? "+" : "") . sprintf("%.2f", $per) . "%";
+					?>
+					</font>
+					</td>
+				</tr>
+				<?php 
+				}
+				?>
+				</table>
 			</td>
 		</tr>
 		</table>

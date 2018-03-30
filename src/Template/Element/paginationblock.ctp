@@ -6,13 +6,11 @@ if ($this->Paginator->hasPage(null, 2)) {
 <td>
 <!-- Shows the page numbers -->
 <?php 
-	echo $this->Paginator->numbers(
-		array(
-			'first' => '|<<', 'last' => '>>|',
-			'before' => ' | ', 'after' => ' | ',
-			'modulus' => 11
-		)
-	);
+	echo $this->Paginator->numbers([
+		'first' => '|<<', 'last' => '>>|',
+		'before' => '', 'after' => '',
+		'modulus' => 11
+	]);
 ?>
 </td>
 <td>
@@ -36,7 +34,7 @@ if ($this->Paginator->hasPage(null, 2)) {
 	);
 ?>
 </td>
-<td>
+<td style="padding-left:8px;">
 <!-- prints X of Y, where X is current page and Y is number of pages -->
 <?php echo $this->Paginator->counter(); ?>
 </td>
@@ -45,3 +43,7 @@ if ($this->Paginator->hasPage(null, 2)) {
 <?php
 }
 ?>
+
+<script type="text/javascript">
+jQuery("ul.pagination > li").css("height", "6px");
+</script>

@@ -5,12 +5,12 @@
 <?php
 /*searching part*/
 ?>
-<div style="width:100%;margin-top:5px;" id="search">
+<div style="width:100%;" id="search">
 <?php
 echo $this->Form->create(
-	null, 
-	[
-		"url" => ['controller' => 'accounts', 'action' => 'lstcompanies/frmSearch']
+	null, [
+		"url" => ['controller' => 'accounts', 'action' => 'lstcompanies/frmSearch'],
+		"class" => 'form-inline'
 	]);
 ?>
 <table style="width:100%;border:0;">
@@ -21,13 +21,13 @@ echo $this->Form->create(
 		<td class="search-label" style="width:105px;">Username:</td>
 		<td>
 		<div style="float:left;width:275px;">
-		<?php echo $this->Form->control('username', ['label' => '', 'type' => 'text', 'style' => 'width:260px;']); ?>
+		<?php echo $this->Form->control('username', ['label' => '', 'type' => 'text', 'style' => 'width:260px;', 'class' => '']); ?>
 		</div>
 		<div style="float:left;width:112px;">
-		<?php echo $this->Form->button(__('Search'), ['style' => 'float:left;width:96px;']); ?>
+		<?php echo $this->Form->button(__('Search'), ['style' => 'float:left;width:96px;', 'class' => 'btn btn-primary btn-sm']); ?>
 		</div>
 		<div style="float:left;">
-		<?php echo $this->Form->button(__('Clear'), ['style' => 'float:left;width:64px;', 'onclick' => 'javascript:__zClearForm("frmSearch");']); ?>
+		<?php echo $this->Form->button(__('Clear'), ['style' => 'float:left;width:64px;', 'class' => 'btn btn-primary btn-sm', 'onclick' => 'javascript:__zClearForm("frmSearch");']); ?>
 		</div>
 		</td>
 	</tr>
@@ -87,11 +87,12 @@ function __checkAll() {
 echo $this->Form->button(__('Add Office'), [
 	'onclick' => 'javascript:location.href=\''
 		. $this->Url->build(['controller' => 'accounts', 'action' => 'regcompany']) . '\'',
-	'style' => 'width:160px;'
+	'style' => 'width:120px;',
+	'class' => 'btn btn-info btn-xs'
 ]);
 ?>
 </div>
-<table style="width:100%">
+<table style="width:100%" class="table table-condensed">
 <thead>
 <tr>
 	<th><b>
@@ -110,7 +111,7 @@ echo $this->Form->button(__('Add Office'), [
 	<th><b><?php echo $this->Paginator->sort('manemail', 'Email'); ?></b></th>
 	<th><b><?php echo $this->Paginator->sort('regtime', 'Registered'); ?></b></th>
 	<th><b><?php echo $this->Paginator->sort('status', 'Status'); ?></b></th>
-	<th><b>Operation</b></th>
+	<th><b><a href="#">Operation</a></b></th>
 </tr>
 </thead>
 <?php
@@ -240,7 +241,7 @@ echo $this->Html->link(
 </div>
 
 <!-- ~~~~~~~~~~~~~~~~~~~the floating message box for "inform selected"~~~~~~~~~~~~~~~~~~~ -->
-<div id="message_box">
+<div id="message_box" style="display:none;">
 	<table style="width:100%">
 	<thead><tr><th>
 		<div style="float:left">Please enter your notes below.</div>
