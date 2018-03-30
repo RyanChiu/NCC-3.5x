@@ -9,7 +9,7 @@ return [
     'UserInputID' => 'CaptchaCode',
     'CodeLength' => CaptchaRandomization::GetRandomCodeLength(4, 6),
     'ImageStyle' => [
-      ImageStyle::Radar,
+      //ImageStyle::Radar,
       ImageStyle::Collage,
       ImageStyle::Fingerprints,
     ],

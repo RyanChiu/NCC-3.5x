@@ -52,6 +52,11 @@ if ($userinfo) {
     
 </head>
 <body style="background-color:black;">
+	<?=
+	'<center>'
+		. $this->Html->image('topbanner-f.png', ['style' => 'border:0'])
+		. '</center>';
+	?>
     <?php //echo "<font color='red'>here@" . print_r($mustread, true) . "</font>";
     if ($userinfo) {
 	    echo $this->Navbar->create($this->Html->icon('home') . ' HOME', 
@@ -91,19 +96,13 @@ if ($userinfo) {
 		    		. '<label id="lblClock" style="color:white;margin-top:2px;padding:0;"></label>', 
 		    	['style' => 'float:right;margin:5px 0 0 0;padding:0;']);
 	    echo $this->Navbar->end();
-    } else {
-    	echo $this->Navbar->create('', ['fluid' => true, 'inverse' => true]);
-    		echo $this->Navbar->text(
-    			$this->Html->image('topbanner.png', ['style' => 'border:0'])
-    		);
-    	echo $this->Navbar->end();
     }
     ?>
-    <?= $this->Panel->create(['style' => 'background-color:black;padding-top:2px;']) ?>
-    	<?= $this->Panel->body() ?>
+    <?= $this->Panel->create(['style' => 'background-color:black;border:0;color:white;']) ?>
+    	<?= $this->Panel->body(['style' => 'margin:0 16px 0 16px;padding:0;']) ?>
     	<?= $this->Flash->render() ?>
         <?= $this->fetch('content') ?>
-        <?= $this->Panel->footer() ?>
+        <?= $this->Panel->footer(['style' => 'background-color: #011122;border:0;']) ?>
         <?= $this->Html->icon('stats'); ?>
         <?= "<div style='float:right'>Copyright &copy; 
 			2015 www.NinjasChatClub.com All Rights Reserved.</div>" ?>

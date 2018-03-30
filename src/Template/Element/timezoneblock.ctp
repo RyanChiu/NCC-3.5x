@@ -1,4 +1,4 @@
-<div style="width:800px;margin:3px 0px 0px 3px;">
+<div style="width:800px;margin:2px 12px 0px 12px;">
 	<b><font size="1" color="white">
     Timezone:<br/>
     All stats pages show EST/EDT(USA) time zone<br/>

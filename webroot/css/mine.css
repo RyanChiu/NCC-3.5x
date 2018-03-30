@@ -1,0 +1,24 @@
+/*table zone*/
+table th {
+	background-color: #bdcedf;
+	font-weight: bold;
+	color: #0080ff;
+}
+table tr.odd {
+	background-color: #112233;
+}
+table td {
+	color: white;
+}
+table caption {
+	font-size: 14px;
+	font-weight: bold;
+	color: white;
+}
+
+/*ul zone*/
+li {
+	list-style: none;
+	padding:0;
+	margin:0;
+}
