@@ -1,8 +1,8 @@
 <?php
-// src/Model/Entity/ViewCompany.php
+// src/Model/Entity/AgentSiteMapping.php
 namespace App\Model\Entity;
 use Cake\ORM\Entity;
-class ViewCompany extends Entity {
+class AgentSiteMapping extends Entity {
 	protected $_accessible = [
 		'*' => true,
 		'id' => false,

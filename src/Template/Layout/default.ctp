@@ -69,8 +69,8 @@ if ($userinfo) {
 			    echo $this->Navbar->beginMenu('OFFICE');
 			    	echo $this->Navbar->link('MANAGE OFFICE', '/accounts/lstcompanies/-1');
 			    echo $this->Navbar->endMenu();
-			    echo $this->Navbar->beginMenu('AGENT', '/accounts/agent');
-			    	echo $this->Navbar->link('MANAGE AGENT', '/');
+			    echo $this->Navbar->beginMenu('AGENT');
+			    	echo $this->Navbar->link('MANAGE AGENT', '/accounts/lstagents/-1');
 			    echo $this->Navbar->endMenu();
 			    echo $this->Navbar->link('APPROVE NEW AGENT', '/');
 			    echo $this->Navbar->beginMenu('LINK', '/links/');

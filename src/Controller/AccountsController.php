@@ -17,6 +17,8 @@ class AccountsController extends AppController {
 		$this->loadModel("TrboTop10s");
 		$this->loadModel("Companies");
 		$this->loadModel("ViewCompanies");
+		$this->loadModel("ViewAgents");
+		$this->loadModel("AgentSiteMappings");
 		
 		$this->loadComponent('Paginator');
 	}
@@ -349,6 +351,149 @@ class AccountsController extends AppController {
     
     	$this->set('status', $this->Accounts->status);
     	$this->set('online', $this->Accounts->online);
+    	$this->set('rs',
+    		$this->paginate($query)
+    	);
+    }
+    
+    function lstagents($id = null) {
+    	$userinfo = $this->Auth->user();
+    	$coms = [];
+    	if ($userinfo['role'] <= 1) {
+    		/*$coms = $this->ViewCompany->find('list',
+    				array(
+    						'fields' => array('companyid', 'officename'),
+    						'conditions' => array('status >= 0'),
+    						'order' => 'officename'
+    				)
+    		);*/
+    		$coms = $this->ViewCompanies->find()
+    			->where(['status >=' => 0])
+    			->order(['officename'])
+    			->all()
+    			->combine('companyid', 'officename');
+    	}
+    	//$coms = ['0' => 'All'] + $coms;
+    	$coms = json_decode(json_encode($coms), true);
+    	array_unshift($coms, ['0' => 'All']);
+    	$this->set(compact('coms'));
+    
+    	/*$sites = $this->Site->find('list',
+    			array(
+    					'fields' => array('id', 'sitename'),
+    					'conditions' => array('status' => 1),
+    					'order' => 'sitename'
+    			)
+    	);*/
+    	$sites = $this->Sites->find()
+    		->where(['status' => 1])
+    		->order(['sitename'])
+    		->all()
+    		->combine('id', 'sitename');
+    	//$sites = ['-1' => '-----------------------'] + $sites;
+    	$sites = json_decode(json_encode($sites), true);
+    	array_unshift($sites, ['-1' => '-----------------------']);
+    	$this->set(compact('sites'));
+    
+    	$this->set('status', $this->Accounts->status);
+    	$this->set('online', $this->Accounts->online);
+    	$this->set('limit', $this->__limit);
+    
+    	/*prepare for the searching part*/
+    	if (!empty($this->request->getData())) {// if there are any POST data
+    		$conditions = [
+    			'username like' => ('%' . trim($this->request->getData('username')) . '%'),
+    			'lower(ag1stname) like' => ('%' . strtolower(trim($this->request->getData('ag1stname'))) . '%'),
+    			'lower(aglastname) like' => ('%' . strtolower(trim($this->request->getData('aglastname'))) . '%'),
+    			'lower(email) like' => ('%' . strtolower(trim($this->request->getData('email'))) . '%')
+    		];
+    		if ($userinfo['role'] == 0) {
+    			$companyid = $this->request->getData('Company_id');
+    			if ($companyid != 0) {
+    				$conditions['companyid'] = [-1, $companyid];
+    			}
+    		} else if ($userinfo['role'] == 1){
+    			$companyid = $this->request->getData('ViewAgent_companyid');
+    			$conditions['companyid'] = [-2, $companyid];
+    		}
+    		$status = $this->request->getData('ViewAgent_status');
+    		if ($status != -1) {
+    			$conditions['status'] = $status;
+    		}
+    		$campaignid = trim($this->request->getData('AgentSiteMapping_campaignid'));
+    		if (!empty($campaignid)) {
+    			/*$ags = $this->AgentSiteMapping->find('list',
+    					array(
+    							'fields' => array('id', 'agentid'),
+    							'conditions' => array(
+    									'campaignid like' => ('%' . $campaignid . '%')
+    							)
+    					)
+    			);*/
+    			$ags = $this->AgentSiteMappings->find()
+    				->where(['caompaignid like' => '%' . $campaignid . '%'])
+    				->all()
+    				->combine('id', 'agentid');
+    			$ags = array_unique($ags);
+    			$conditions['id'] = $ags;
+    		}
+    		$exsite = $this->request->getData('SiteExcluding_siteid');
+    		if ($exsite != -1) {
+    			/*$exags = $this->SiteExcluding->find('list',
+    					array(
+    							'fields' => array('id', 'agentid'),
+    							'conditions' => array('siteid' => $exsite)
+    					)
+    			);*/
+    			$exags = $this->SiteExcludings->find()
+    				->where(['siteid' => $exsite])
+    				->all()
+    				->combine('id', 'agentid');
+    			$exags = array_unique($exags);
+    			if (array_key_exists('id', $conditions)) {
+    				$conditions['id'] = array_intersect($conditions['id'], $exags);
+    			} else {
+    				$conditions['id'] = $exags;
+    			}
+    		}
+    	} else {
+    		if ($id == null || !is_numeric($id)) {
+    			if ($this->request->session()->check('conditions_ag')) {
+    				$conditions = $this->request->session()->read('conditions_ag');
+    			} else {
+    				$conditions = ['1' => '1'];
+    			}
+    		} else {
+    			if ($id != -1) {
+    				$arr = [-3, $id];//!!!important!!!we must do this to ensure that the "order by" in MYSQL could work normally but not being misunderstanding
+    				$conditions = ['companyid' => $arr];
+    			} else {//"-1" is specially for the administrator
+    				$conditions = ['1' => '1'];
+    			}
+    		}
+    	}
+    
+    	$conditions = [
+    		'AND' => [
+    			'companyid' => array_keys($coms),
+    			'status >=' => 0
+    		]
+    	] + $conditions;
+    	$this->request->session()->write('conditions_ag', $conditions);
+    
+    	/*$this->paginate = array(
+    		'ViewAgent' => array(
+    			'conditions' => $conditions,
+    			'limit' => $this->__limit,
+    			'order' => 'username4m'
+    		)
+    	);*/
+    	$this->paginate = [
+    		'limit' => $this->__limit,
+    		'order' => ['username4m']
+    	];
+    	$query = $this->ViewAgents->find()
+    		->where(/*$conditions*/['1' => '1']);
     	$this->set('rs',
     		$this->paginate($query)
     	);
