@@ -51,6 +51,8 @@ class AccountsController extends AppController {
 	    			return $this->redirect(["controller" => "accounts", "action" => "index"]);
 	    		}
 	    		$this->Flash->set('Your username or password is incorrect.', ['element' => 'error']);
+    		} else {
+    			$this->Flash->set('Wrong validation colde, please try again.', ['element' => 'error']);
     		}
     	}
     }
