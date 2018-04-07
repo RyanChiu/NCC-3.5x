@@ -103,14 +103,14 @@ echo $this->Form->button(__('Add Office'), [
 		'onclick' => 'javascript:__checkAll();__setActSusLink();'
 	]);
 	?>
-	</b></th>
-	<th><b><?php echo $this->Paginator->sort('officename', 'Office'); ?></b></th>
-	<th><b><?php echo $this->Paginator->sort('agenttotal', 'Total Agents'); ?></b></th>
-	<th><b><?php echo $this->Paginator->sort('username4m', 'Username'); ?></b></th>
-	<th><b><?php echo $this->Paginator->sort('originalpwd', 'Password'); ?></b></th>
-	<th><b><?php echo $this->Paginator->sort('manemail', 'Email'); ?></b></th>
-	<th><b><?php echo $this->Paginator->sort('regtime', 'Registered'); ?></b></th>
-	<th><b><?php echo $this->Paginator->sort('status', 'Status'); ?></b></th>
+	</b></th><?php $icon = "<i class='glyphicon glyphicon-chevron-up'></i>"; ?>
+	<th><b><?php echo $this->ExPaginator->sort('ViewCompanies.officename', 'Office'); ?></b></th>
+	<th><b><?php echo $this->ExPaginator->sort('ViewCompanies.agenttotal', 'Total Agents'); ?></b></th>
+	<th><b><?php echo $this->ExPaginator->sort('ViewCompanies.username4m', 'Username'); ?></b></th>
+	<th><b><?php echo $this->ExPaginator->sort('ViewCompanies.originalpwd', 'Password'); ?></b></th>
+	<th><b><?php echo $this->ExPaginator->sort('ViewCompanies.manemail', 'Email'); ?></b></th>
+	<th><b><?php echo $this->ExPaginator->sort('ViewCompanies.regtime', 'Registered'); ?></b></th>
+	<th><b><?php echo $this->ExPaginator->sort('ViewCompanies.status', 'Status'); ?></b></th>
 	<th><b><a href="#">Operation</a></b></th>
 </tr>
 </thead>
