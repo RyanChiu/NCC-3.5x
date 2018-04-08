@@ -7,10 +7,10 @@
 ?>
 <div style="width:100%;" id="search">
 <?php
-echo $this->Form->create(
-	null, [
+echo $this->Form->create(null, [
 		"url" => ['controller' => 'accounts', 'action' => 'lstcompanies/frmSearch'],
-		"class" => 'form-inline'
+		"class" => 'form-inline',
+		"id" => "frmSearch"
 	]);
 ?>
 <table style="width:100%;border:0;">
@@ -21,13 +21,13 @@ echo $this->Form->create(
 		<td class="search-label" style="width:105px;">Username:</td>
 		<td>
 		<div style="float:left;width:275px;">
-		<?php echo $this->Form->control('username', ['label' => '', 'type' => 'text', 'style' => 'width:260px;', 'class' => '']); ?>
+		<?php echo $this->Form->control('username', ['label' => '', 'type' => 'text', 'style' => 'width:260px;', 'class' => 'form-control input-sm']); ?>
 		</div>
 		<div style="float:left;width:112px;">
 		<?php echo $this->Form->button(__('Search'), ['style' => 'float:left;width:96px;', 'class' => 'btn btn-primary btn-sm']); ?>
 		</div>
 		<div style="float:left;">
-		<?php echo $this->Form->button(__('Clear'), ['style' => 'float:left;width:64px;', 'class' => 'btn btn-primary btn-sm', 'onclick' => 'javascript:__zClearForm("frmSearch");']); ?>
+		<?php echo $this->Form->button(__('Clear'), ['style' => 'float:left;width:64px;', 'class' => 'btn btn-primary btn-sm', 'onclick' => 'javascript:__zClearForm(\'frmSearch\');', 'type' => 'button']); ?>
 		</div>
 		</td>
 	</tr>

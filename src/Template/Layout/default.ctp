@@ -45,6 +45,7 @@ if ($userinfo) {
     <?= $this->Html->script('bootstrap.min.js') ?>
     <?= $this->Html->script('ckeditor/ckeditor.js') ?>
     <?= $this->Html->script('zrkits/extrakits.inc.js') ?>
+    <?= $this->Html->script('zrkits/zToolkits.js') ?>
     <?= $this->Html->script('jquery.fancybox.min.js') ?>
     
     <!-- include the BotDetect layout stylesheet -->
@@ -102,7 +103,7 @@ if ($userinfo) {
     	<?= $this->Panel->body(['style' => 'margin:0 16px 0 16px;padding:0;']) ?>
     	<?= $this->Flash->render() ?>
         <?= $this->fetch('content') ?>
-        <?= $this->Panel->footer(['style' => 'background-color: #011122;border:0;']) ?>
+        <?= $this->Panel->footer(['style' => 'background-color: #242424;border:0;']) ?>
         <?= $this->Html->icon('stats'); ?>
         <?= "<div style='float:right'>Copyright &copy; 
 			2015 www.NinjasChatClub.com All Rights Reserved.</div>" ?>
