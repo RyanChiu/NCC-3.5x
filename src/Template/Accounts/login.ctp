@@ -1,5 +1,5 @@
 <center>
-<h1>Login</h1>
+<h1>Log in</h1>
 <?= $this->Form->create() ?>
 <?= $this->Form->control('username', ['style' => 'width:360px;']) ?>
 <?= $this->Form->control('password', ['style' => 'width:360px;']) ?>
@@ -15,7 +15,7 @@
 		'id' => 'CaptchaCode'
     ]) ?>
 
-<?= $this->Form->button('Login', ['style' => 'width:360px;', 'class' => 'btn btn-primary']) ?>
+<?= $this->Form->button(__('Log in'), ['style' => 'width:360px;', 'class' => 'btn btn-primary']) ?>
 <?= $this->Form->end() ?>
 <br/>
 </center>

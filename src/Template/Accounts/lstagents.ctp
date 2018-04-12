@@ -9,16 +9,18 @@ $userinfo = $Auth->user();
 ?>
 <?php
 /*searching part*/
+///*debug line*/$conditions = print_r($conditions, true); $conditions = str_replace("\n", "<br/>", $conditions);echo $conditions;
 ?>
 <div style="width:100%;margin-top:5px;" id="search">
 <?php
 echo $this->Form->create(
 	null, [
 		"url" => ['controller' => 'accounts', 'action' => 'lstagents'], 
-		'id' => 'frmSearch'
+		'id' => 'frmSearch',
+		"class" => 'form-inline'
 	]);
 ?>
-<table style="width:100%;border:0;">
+<table style="width:100%;">
 	<caption>
 	<?php echo $this->Html->image('iconSearch.png', array('style' => 'width:16px;height:16px;')) . 'Search'; ?>
 	</caption>
@@ -26,7 +28,7 @@ echo $this->Form->create(
 		<td class="search-label" style="width:105px;">Username:</td>
 		<td>
 		<div style="float:left;width:275px;">
-		<?php echo $this->Form->input('ViewAgent.username', array('label' => '', 'style' => 'width:260px;')); ?>
+		<?php echo $this->Form->control('ViewAgent.username', ['label' => '', 'style' => 'width:260px;', 'class' => 'form-control input-sm']); ?>
 		</div>
 		</td>
 		<?php
@@ -41,11 +43,11 @@ echo $this->Form->create(
 		}
 		if ($userinfo['role'] == 0) {
 			echo '<td>';
-			echo $this->Form->input('Company.id',
-				array('label' => '', 'type' => 'select',
-					'options' => $coms,	'style' => 'width:260px;'
-				)
-			);
+			echo $this->Form->control('Company.id', [
+				'label' => '', 'type' => 'select',
+				'options' => $coms,	'style' => 'width:260px;',
+				'class' => 'form-control input-sm'
+			]);
 			echo '</td>';
 		}
 		?>
@@ -54,13 +56,13 @@ echo $this->Form->create(
 		<td class="search-label" style="width:105px;">Last Name:</td>
 		<td>
 		<div style="float:left;width:275px;">
-		<?php echo $this->Form->input('ViewAgent.aglastname', array('label' => '', 'style' => 'width:260px;')); ?>
+		<?php echo $this->Form->control('ViewAgent.aglastname', ['label' => '', 'style' => 'width:260px;', 'class' => 'form-control input-sm']); ?>
 		</div>
 		</td>
 		<td class="search-label">Campaign ID:</td>
 		<td>
 		<div style="float:left;width:275px;">
-		<?php echo $this->Form->input('AgentSiteMapping.campaignid', array('label' => '', 'style' => 'width:260px;')); ?>
+		<?php echo $this->Form->control('AgentSiteMapping.campaignid', ['label' => '', 'style' => 'width:260px;', 'class' => 'form-control input-sm']); ?>
 		</div>
 		</td>
 	</tr>
@@ -68,19 +70,18 @@ echo $this->Form->create(
 		<td class="search-label" style="width:105px;">First Name:</td>
 		<td>
 		<div style="float:left;width:275px;">
-		<?php echo $this->Form->input('ViewAgent.ag1stname', array('label' => '', 'style' => 'width:260px;')); ?>
+		<?php echo $this->Form->control('ViewAgent.ag1stname', ['label' => '', 'style' => 'width:260px;', 'class' => 'form-control input-sm']); ?>
 		</div>
 		</td>
 		<td class="search-label">Status:</td>
 		<td>
 		<div style="float:left;width:275px;">
 		<?php
-		echo $this->Form->input('ViewAgent.status',
-			array(
-				'label' => '', 'style' => 'width:260px;',
-				'type' => 'select', 'options' => (array('-1' => 'All') + $status)
-			)
-		);
+		echo $this->Form->control('ViewAgent.status', [
+			'label' => '', 'style' => 'width:260px;',
+			'type' => 'select', 'options' => (array('-1' => 'All') + $status),
+			'class' => 'form-control input-sm'
+		]);
 		?>
 		</div>
 		</td>
@@ -89,17 +90,18 @@ echo $this->Form->create(
 		<td class="search-label" style="width:105px;">Email:</td>
 		<td>
 		<div style="float:left;width:275px;">
-		<?php echo $this->Form->input('ViewAgent.email', array('label' => '', 'style' => 'width:260px;')); ?>
+		<?php echo $this->Form->control('ViewAgent.email', ['label' => '', 'style' => 'width:260px;', 'class' => 'form-control input-sm']); ?>
 		</div>
 		</td>
 		<td class="search-label">Suspended Site:</td>
 		<td>
 		<?php
-		echo $this->Form->input('SiteExcluding.siteid',
-			array('label' => '', 'type' => 'select',
-				'options' => $sites,	'style' => 'width:260px;'
-			)
-		);
+		echo $this->Form->control('SiteExcluding.siteid', [
+			'label' => '', 'type' => 'select',
+			'options' => $sites,
+			'style' => 'width:260px;',
+			'class' => 'form-control input-sm'
+		]);
 		?>
 		</td>
 	</tr>
@@ -107,10 +109,10 @@ echo $this->Form->create(
 		<td colspan="2"></td>
 		<td colspan="2">
 		<div style="float:left;width:112px;">
-		<?php echo $this->Form->submit('Search', array('style' => 'float:left;width:96px;')) ?>
+		<?php echo $this->Form->button(__('Search'), ['style' => 'float:left;width:96px;', 'class' => 'btn btn-primary btn-sm']); ?>
 		</div>
 		<div style="float:left;">
-		<?php echo $this->Form->submit('Clear', array('style' => 'float:left;width:96px;', 'onclick' => 'javascript:__zClearForm("frmSearch");')); ?>
+		<?php echo $this->Form->button(__('Clear'), ['style' => 'float:left;width:64px;', 'class' => 'btn btn-primary btn-sm', 'onclick' => 'javascript:__zClearForm(\'frmSearch\');', 'type' => 'button']); ?>
 		</div>
 		</td>
 	</tr>
@@ -120,7 +122,7 @@ $companyid = 0;
 if ($userinfo['role'] == 1) {//means an office
 	$companyid = $userinfo['id'];
 }
-echo $this->Form->input('ViewAgent.companyid', array('type' => 'hidden', 'value' => $companyid));
+echo $this->Form->control('ViewAgent.companyid', ['type' => 'hidden', 'value' => $companyid, 'class' => 'form-control input-sm']);
 echo $this->Form->end();
 ?>
 </div>
@@ -132,7 +134,7 @@ echo $this->Form->end();
 <script type="text/javascript">
 function __setActSusLink() {
 	var checkboxes;
-	checkboxes = document.getElementsByName("data[ViewAgent][selected]");
+	checkboxes = document.getElementsByName("selAgents");
 	var ids = "";
 	for (var i = 0; i < checkboxes.length; i++) {
 		if (checkboxes[i].checked && checkboxes[i].value != 0) {
@@ -146,7 +148,7 @@ function __setActSusLink() {
 }
 function __setCurSelectedToBeInformed() {
 	var checkboxes;
-	checkboxes = document.getElementsByName("data[ViewAgent][selected]");
+	checkboxes = document.getElementsByName("selAgents");
 	var ids = "";
 	for (var i = 0; i < checkboxes.length; i++) {
 		if (checkboxes[i].checked && checkboxes[i].value != 0) {
@@ -163,7 +165,7 @@ function __setInfLink() {
 }
 function __checkAll() {
 	var checkboxes;
-	checkboxes = document.getElementsByName("data[ViewAgent][selected]");
+	checkboxes = document.getElementsByName("selAgents");
 	for (var i = 0; i < checkboxes.length; i++) {
 		checkboxes[i].checked = document.getElementById("checkboxAll").checked;
 	}
@@ -174,13 +176,12 @@ function __checkAll() {
 <?php
 if (in_array($userinfo['role'], array(0, 1))) {//means an administrator or an office
 	//echo $this->Form->button($userinfo['role'] == 0 ? 'Add Agent' : 'Request New Agent',
-	echo $this->Form->button('Add Agent',
-		array(
-			'onclick' => 'javascript:location.href=\'' .
-				$this->Html->url(array('controller' => 'accounts', 'action' => 'regagent')) . '\'',
-			'style' => 'width:160px;'
-		)
-	);
+	echo $this->Form->button(__('Add Agent'), [
+		'onclick' => 'javascript:location.href=\'' .
+			$this->Url->build(['controller' => 'accounts', 'action' => 'regagent']) . '\'',
+		'style' => 'width:160px;',
+		'class' => 'btn btn-info btn-xs'
+	]);
 }
 ?>
 </div>
@@ -189,22 +190,21 @@ if (in_array($userinfo['role'], array(0, 1))) {//means an administrator or an of
 <tr>
 	<th><b>
 	<?php
-	echo $this->Form->checkbox('',
-		array('id' => 'checkboxAll', 'value' => -1,
-			'style' => 'border:0px;width:16px;',
-			'onclick' => 'javascript:__checkAll();__setActSusLink();'
-		)
-	);
+	echo $this->Form->checkbox('', [
+		'id' => 'checkboxAll', 'value' => -1,
+		'style' => 'border:0px;width:16px;',
+		'onclick' => 'javascript:__checkAll();__setActSusLink();'
+	]);
 	?>
 	</b></th>
-	<th><b><?php echo $this->ExPaginator->sort('ViewAgent.username4m', 'Username'); ?></b></th>
-	<th><b><?php echo $this->ExPaginator->sort('ViewAgent.originalpwd', 'Password'); ?></b></th>
-	<th><b><?php echo $this->ExPaginator->sort('ViewAgent.officename', 'Office'); ?></b></th>
-	<th><b><?php echo $this->ExPaginator->sort('ViewAgent.regtime', 'Registered'); ?></b></th>
-	<th><b><?php echo $this->ExPaginator->sort('ViewAgent.lastlogintime', 'Last Login'); ?></b></th>
-	<th><b><?php echo $this->ExPaginator->sort('ViewAgent.logintimes', 'Login Times'); ?></b></th>
-	<th><b><?php echo $this->ExPaginator->sort('ViewAgent.status', 'Status'); ?></b></th>
-	<th><b><?php echo $this->ExPaginator->sort('ViewAgent.campaigns', 'Campaigns'); ?></b></th>
+	<th><b><?php echo $this->ExPaginator->sort('ViewAgents.username4m', 'Username'); ?></b></th>
+	<th><b><?php echo $this->ExPaginator->sort('ViewAgents.originalpwd', 'Password'); ?></b></th>
+	<th><b><?php echo $this->ExPaginator->sort('ViewAgents.officename', 'Office'); ?></b></th>
+	<th><b><?php echo $this->ExPaginator->sort('ViewAgents.regtime', 'Registered'); ?></b></th>
+	<th><b><?php echo $this->ExPaginator->sort('ViewAgents.lastlogintime', 'Last Login'); ?></b></th>
+	<th><b><?php echo $this->ExPaginator->sort('ViewAgents.logintimes', 'Login Times'); ?></b></th>
+	<th><b><?php echo $this->ExPaginator->sort('ViewAgents.status', 'Status'); ?></b></th>
+	<th><b><?php echo $this->ExPaginator->sort('ViewAgents.campaigns', 'Campaigns'); ?></b></th>
 	<th><b>Operation</b></th>
 	<th>
 	<?php
@@ -225,12 +225,12 @@ foreach ($rs as $r):
 <tr <?php echo $i % 2 == 0? '' : 'class="odd"'; ?>>
 	<td>
 	<?php
-	echo $this->Form->checkbox('ViewAgent.selected',
-		array('value' => $r->id,
-			'style' => 'border:0px;width:16px;',
-			'onclick' => 'javascript:__setActSusLink();'
-		)
-	);
+	echo $this->Form->checkbox('ViewAgent.selected', [
+		'value' => $r->id,
+		'style' => 'border:0px;width:16px;',
+		'onclick' => 'javascript:__setActSusLink();',
+		'name' => 'selAgents'
+	]);
 	echo '<font size="1">' . ($i + 1 + $limit * ($this->Paginator->current() - 1)) . '</font>';
 	?>
 	</td>
@@ -362,7 +362,7 @@ echo $this->Html->link(
 	<tr><td><textarea id="txtNotes" style="width:99%" rows="6" onchange="javascript:__setInfLink();"></textarea></td></tr>
 	<tr><td>
 		<?php
-		echo $this->Form->input('', array('type' => 'hidden', 'id' => 'hidCurSelectedToBeInformed'));
+		echo $this->Form->control('', ['type' => 'hidden', 'id' => 'hidCurSelectedToBeInformed']);
 		echo $this->Html->link(
 			'',
 			array('controller' => 'accounts', 'action' => 'informem'),
@@ -379,7 +379,7 @@ echo $this->Html->link(
 	</table>
 </div>
 <script type="text/javascript">
-jQuery(":checkbox").attr({style: "border:0px;width:16px;vertical-align:middle;"}); 
+//jQuery(":checkbox").attr({style: "border:0px;width:16px;vertical-align:middle;"}); 
 </script>
 <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
 <?php

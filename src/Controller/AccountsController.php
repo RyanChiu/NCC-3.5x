@@ -343,16 +343,16 @@ class AccountsController extends AppController {
     	}
     
     	$this->request->session()->write(['conditions_com' => $conditions]);
-    
+
+    	$this->set('status', $this->Accounts->status);
+    	$this->set('online', $this->Accounts->online);
+
     	$this->paginate = [
     		'limit' => $this->__limit,
     		'order' => ['regtime desc']
     	];
     	$query = $this->ViewCompanies->find()
     		->where($conditions);
-    
-    	$this->set('status', $this->Accounts->status);
-    	$this->set('online', $this->Accounts->online);
     	$this->set('rs',
     		$this->paginate($query)
     	);
@@ -373,11 +373,13 @@ class AccountsController extends AppController {
     			->where(['status >=' => 0])
     			->order(['officename'])
     			->all()
-    			->combine('companyid', 'officename');
+    			->combine('companyid', 'officename')
+    			->toArray();
     	}
     	//$coms = ['0' => 'All'] + $coms;
-    	$coms = json_decode(json_encode($coms), true);
-    	array_unshift($coms, ['0' => 'All']);
+    	//$coms = json_decode(json_encode($coms), true);
+    	$coms[0] = 'All';
+    	asort($coms);
     	$this->set(compact('coms'));
     
     	/*$sites = $this->Site->find('list',
@@ -391,10 +393,12 @@ class AccountsController extends AppController {
     		->where(['status' => 1])
     		->order(['sitename'])
     		->all()
-    		->combine('id', 'sitename');
+    		->combine('id', 'sitename')
+    		->toArray();
     	//$sites = ['-1' => '-----------------------'] + $sites;
-    	$sites = json_decode(json_encode($sites), true);
-    	array_unshift($sites, ['-1' => '-----------------------']);
+    	//$sites = json_decode(json_encode($sites), true);
+    	$sites['-1'] = '-----------------------';
+    	asort($sites);
     	$this->set(compact('sites'));
     
     	$this->set('status', $this->Accounts->status);
@@ -404,25 +408,25 @@ class AccountsController extends AppController {
     	/*prepare for the searching part*/
     	if (!empty($this->request->getData())) {// if there are any POST data
     		$conditions = [
-    			'username like' => ('%' . trim($this->request->getData('username')) . '%'),
-    			'lower(ag1stname) like' => ('%' . strtolower(trim($this->request->getData('ag1stname'))) . '%'),
-    			'lower(aglastname) like' => ('%' . strtolower(trim($this->request->getData('aglastname'))) . '%'),
-    			'lower(email) like' => ('%' . strtolower(trim($this->request->getData('email'))) . '%')
+    			'username like' => ('%' . trim($this->request->getData('ViewAgent.username')) . '%'),
+    			'lower(ag1stname) like' => ('%' . strtolower(trim($this->request->getData('ViewAgent.ag1stname'))) . '%'),
+    			'lower(aglastname) like' => ('%' . strtolower(trim($this->request->getData('ViewAgent.aglastname'))) . '%'),
+    			'lower(email) like' => ('%' . strtolower(trim($this->request->getData('ViewAgent.email'))) . '%')
     		];
     		if ($userinfo['role'] == 0) {
-    			$companyid = $this->request->getData('Company_id');
+    			$companyid = $this->request->getData('Company.id');
     			if ($companyid != 0) {
-    				$conditions['companyid'] = [-1, $companyid];
+    				$conditions['companyid IN'] = [-1, $companyid];
     			}
     		} else if ($userinfo['role'] == 1){
-    			$companyid = $this->request->getData('ViewAgent_companyid');
-    			$conditions['companyid'] = [-2, $companyid];
+    			$companyid = $this->request->getData('ViewAgent.companyid');
+    			$conditions['companyid IN'] = [-2, $companyid];
     		}
-    		$status = $this->request->getData('ViewAgent_status');
+    		$status = $this->request->getData('ViewAgent.status');
     		if ($status != -1) {
     			$conditions['status'] = $status;
     		}
-    		$campaignid = trim($this->request->getData('AgentSiteMapping_campaignid'));
+    		$campaignid = trim($this->request->getData('AgentSiteMapping.campaignid'));
     		if (!empty($campaignid)) {
     			/*$ags = $this->AgentSiteMapping->find('list',
     					array(
@@ -433,13 +437,14 @@ class AccountsController extends AppController {
     					)
     			);*/
     			$ags = $this->AgentSiteMappings->find()
-    				->where(['caompaignid like' => '%' . $campaignid . '%'])
+    				->where(['campaignid like' => '%' . $campaignid . '%'])
     				->all()
-    				->combine('id', 'agentid');
+    				->combine('id', 'agentid')
+    				->toArray();
     			$ags = array_unique($ags);
-    			$conditions['id'] = $ags;
+    			$conditions['id IN'] = $ags;
     		}
-    		$exsite = $this->request->getData('SiteExcluding_siteid');
+    		$exsite = $this->request->getData('SiteExcluding.siteid');
     		if ($exsite != -1) {
     			/*$exags = $this->SiteExcluding->find('list',
     					array(
@@ -450,12 +455,13 @@ class AccountsController extends AppController {
     			$exags = $this->SiteExcludings->find()
     				->where(['siteid' => $exsite])
     				->all()
-    				->combine('id', 'agentid');
+    				->combine('id', 'agentid')
+    				->toArray();
     			$exags = array_unique($exags);
-    			if (array_key_exists('id', $conditions)) {
-    				$conditions['id'] = array_intersect($conditions['id'], $exags);
+    			if (array_key_exists('id IN', $conditions)) {
+    				$conditions['id IN'] = array_intersect($conditions['id IN'], $exags);
     			} else {
-    				$conditions['id'] = $exags;
+    				$conditions['id IN'] = $exags;
     			}
     		}
     	} else {
@@ -468,19 +474,14 @@ class AccountsController extends AppController {
     		} else {
     			if ($id != -1) {
     				$arr = [-3, $id];//!!!important!!!we must do this to ensure that the "order by" in MYSQL could work normally but not being misunderstanding
-    				$conditions = ['companyid' => $arr];
+    				$conditions = ['companyid IN' => $arr];
     			} else {//"-1" is specially for the administrator
     				$conditions = ['1' => '1'];
     			}
     		}
     	}
     
-    	$conditions = [
-    		'AND' => [
-    			'companyid' => array_keys($coms),
-    			'status >=' => 0
-    		]
-    	] + $conditions;
+    	$this->set(compact('conditions'));
     	$this->request->session()->write('conditions_ag', $conditions);
     
     	/*$this->paginate = array(
@@ -495,7 +496,11 @@ class AccountsController extends AppController {
     		'order' => ['username4m']
     	];
     	$query = $this->ViewAgents->find()
-    		->where(/*$conditions*/['1' => '1']);
+    		->where($conditions)
+    		->where([
+    			'companyid IN' => array_keys($coms),
+    			'status >=' => 0
+    		]);
     	$this->set('rs',
     		$this->paginate($query)
     	);
