@@ -4,6 +4,12 @@ namespace App\Model\Table;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
 class CompaniesTable extends Table {
+	public $payouttype = [
+		'0' => 'Pay by Check',
+		'1' => 'Pay by Webstern Union',
+		'2' => 'Pay by Wire'
+	];
+	
 	public function initialize(array $config) {
 		
 	}
@@ -13,13 +19,7 @@ class CompaniesTable extends Table {
 			->notEmpty('man1stname')
 			->notEmpty('manlastname')
 			->notEmpty('mancellphone')
-			->notEmpty('country');
-		
-		return $validator;
-	}
-	
-	public function validationUpdate($validator) {
-		$validator
+			->notEmpty('country')
 			->add('officename', 'officenameRule_1', [
 				'rule' => 'notEmpty',
 				'message' => 'Please do not let this field empty.'

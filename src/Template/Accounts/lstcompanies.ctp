@@ -103,7 +103,7 @@ echo $this->Form->button(__('Add Office'), [
 		'onclick' => 'javascript:__checkAll();__setActSusLink();'
 	]);
 	?>
-	</b></th><?php $icon = "<i class='glyphicon glyphicon-chevron-up'></i>"; ?>
+	</b></th>
 	<th><b><?php echo $this->ExPaginator->sort('ViewCompanies.officename', 'Office'); ?></b></th>
 	<th><b><?php echo $this->ExPaginator->sort('ViewCompanies.agenttotal', 'Total Agents'); ?></b></th>
 	<th><b><?php echo $this->ExPaginator->sort('ViewCompanies.username4m', 'Username'); ?></b></th>

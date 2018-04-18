@@ -12,6 +12,7 @@ class AccountsController extends AppController {
 	{
 		parent::initialize();
 		$this->loadModel("Accounts");
+		$this->loadModel("Countries");
 		$this->loadModel("Bulletins");
 		$this->loadModel("Top10s");
 		$this->loadModel("TrboTop10s");
@@ -356,6 +357,161 @@ class AccountsController extends AppController {
     	$this->set('rs',
     		$this->paginate($query)
     	);
+    }
+    
+    function regcompany($id = null) {
+    	//TEMPORERALY  DISABLED
+    	//$this->render("tempdisinfo");
+
+    	/*prepare the countries for this view*/
+    	//$cts = $this->Country->find('list', array('fields' => array('Country.abbr', 'Country.fullname')));
+    	$cts = $this->Countries->find()
+    		->all()
+    		->combine('abbr', 'fullname')
+    		->toArray();
+    	$this->set('cts', $cts);
+    
+    	/*prepare associated sites data*/
+    	/*$exsites = $this->SiteExcluding->find('list',
+    			array(
+    					'fields' => array('id', 'siteid'),
+    					'conditions' => array('companyid' => $id)
+    			)
+    	);*/
+    	$exsites = $this->SiteExcludings->find()
+    		->where(['companyid' => $id])
+    		->all()
+    		->combine('id', 'siteid')
+    		->toArray();
+    	/*$sites = $this->Site->find('list',
+    			array(
+    					'fields' => array('id', 'sitename'),
+    					'conditions' => array('status' => 1),
+    					'order' => 'sitename'
+    			)
+    	);*/
+    	$sites = $this->Sites->find()
+    		->where(['status' => 1])
+    		->order(['sitename'])
+    		->all()
+    		->combine('id', 'sitename')
+    		->toArray();
+    	$exsites = array_unique($exsites);
+    	$exsites = array_flip($exsites);
+    	foreach ($exsites as $k => $v) {
+    		if (in_array($k, array_keys($sites))) {
+    			$exsites[$k] = $sites[$k];
+    		}
+    	}
+    	$this->set(compact('exsites'));
+    	$this->set(compact('sites'));
+    
+    	$this->set('payouttype', $this->Companies->payouttype);
+    	$data = null;
+    	if (!empty($this->request->getData())) {
+    		$data = [];
+    		/*check if the passwords match or empty or untrimed*/
+    		$originalpwd = $this->request->getData('Account.originalpwd');
+    		if (strlen(trim($originalpwd)) != strlen($originalpwd)) {
+    			$data['Account.password'] = $this->request->getData('Account.originalpwd');
+    			$this->Flash->set(
+    				'Please remove any blank in front of or at the end of your password and try again.',
+    				['element' => 'error']
+    			);
+    			return;
+    		}
+    		//if (empty($this->request->data['Account']['originalpwd']) || $this->request->data['Account']['password'] != $this->Auth->password($this->request->data['Account']['originalpwd'])) {
+    		if (empty($this->request->getData('Account.originalpwd')) || $this->request->getData('Account.password') != $this->request->getData('Account.originalpwd')) {
+    			//$this->request->data['Account']['password'] = '';
+    			//$this->request->data['Account']['originalpwd'] = '';
+    			$this->Flash->set(
+    				'The passwords don\'t match to each other, please try again(and do not left it blank).',
+    				['element' => 'error']
+    			);
+    			return;
+    		}
+    			
+    		/*validate the posted fields ?????????????*/
+    		$vAccount = $this->Accounts->newEntity($this->request->getData());
+    		$vCompany = $this->Companies->newEntity($this->request->getData());
+    		if ($vAccount->errors() || $vCompany->errors()) {
+    			$this->request->data['Account']['password'] = $this->request->data['Account']['originalpwd'];
+    			$this->Session->setFlash('Please notice the tips below the fields.');
+    			return;
+    		}
+    			
+    		/*make the value of field "regtime" to the current time*/
+    		$this->request->data['Account']['regtime'] = date('Y-m-d H:i:s');
+    			
+    		/*actually save the posted data*/
+    		$this->Account->create();
+    		$this->request->data['Account']['username4m'] = __fillzero4m($this->request->data['Account']['username']);
+    		if ($this->Account->save($this->request->data)) {//1stly, save the data into 'accounts'
+    			$this->Session->setFlash('Only account added.Please contact your administrator immediately.');
+    
+    			$this->request->data['Company']['id'] = $this->Account->id;
+    			$this->Company->create();
+    			if ($this->Company->save($this->request->data)) {//2ndly, save the data into 'companies'
+    				/*after an office added, update the site_excluding data, then*/
+    				$__sites = $this->request->data['SiteExcluding']['siteid'];
+    				if (is_array($__sites)) {
+    					$__sites = array_diff(array_keys($sites), $__sites);
+    				} else {
+    					$__sites = array_keys($sites);
+    				}
+    				$exdata = array();
+    				foreach ($__sites as $__site) {
+    					array_push(
+    							$exdata,
+    							array(
+    									'companyid' => $this->request->data['Company']['id'],
+    									'siteid' => $__site
+    							)
+    							);
+    				}
+    				$this->SiteExcluding->deleteAll(//since if no recs to del, it seems also return false, so we ignore it here
+    						array('companyid' => $this->request->data['Company']['id'])
+    						);
+    				$exdone = false;
+    				if (!empty($exdata)) {
+    					$exdone = ($this->SiteExcluding->saveAll($exdata) ? true : false);
+    				} else {
+    					$exdone = true;
+    				}
+    					
+    				/*send out an email to inform that a new agent created*/
+    				/*
+    					$this->__sendemail(
+    					"A new office '"
+    					. $this->request->data['Account']['username']
+    					. "' created, please check it out.",
+    					"empty",
+    					"SUPPORT@ninjaschatclub.com",
+    					"NOREPLY@ninjaschatclub.com"
+    					);
+    					*/
+    
+    				/*redirect to some page*/
+    				$this->Session->setFlash(
+    						'Office "'
+    						. $this->request->data['Account']['username']
+    						. '" added.'
+    						. ($exdone ? '' : '<br><i>(Site associating failed.)</i>')
+    						);
+    				if ($id != -1) {
+    					$this->redirect(array('controller' => 'accounts', 'action' => 'lstcompanies'));
+    				} else {
+    					$this->redirect(array('controller' => 'accounts', 'action' => 'regcompany'));
+    				}
+    			} else {
+    				$this->request->data['Account']['password'] = $this->request->data['Account']['originalpwd'];
+    				//should add some codes here to delete the record that saved in 'accounts' table before if failed
+    			}
+    		} else {
+    			$this->request->data['Account']['password'] = $this->request->data['Account']['originalpwd'];
+    		}
+    	}
+    	$this->set(compact('data'));
     }
     
     function lstagents($id = null) {
