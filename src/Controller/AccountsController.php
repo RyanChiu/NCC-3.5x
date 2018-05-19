@@ -408,6 +408,7 @@ class AccountsController extends AppController {
     
     	$this->set('payouttype', $this->Companies->payouttype);
     	$data = null;
+    	$this->set(compact("data"));
     	if (!empty($this->request->getData())) {
     		$data = [];
     		/*check if the passwords match or empty or untrimed*/
@@ -431,10 +432,14 @@ class AccountsController extends AppController {
     			return;
     		}
     			
-    		/*validate the posted fields ?????????????*/
-    		$vAccount = $this->Accounts->newEntity($this->request->getData());
+    		/*validate the posted fields ????????????? the "validationDefault" is executed but no errors*/
+    		$accounts = TableRegistry::get("Accounts");
+    		$vAccount = $accounts->newEntity();
+    		$vAccount = $accounts->patchEntity($vAccount, $this->request->getData());
     		$vCompany = $this->Companies->newEntity($this->request->getData());
-    		if ($vAccount->errors() || $vCompany->errors()) {
+    		//$vCompany = $companies->patchEntity($vCompany, $this->request->getData());
+    		$this->set('tmp', [$vAccount, $vCompany, $this->Companies->tmp, $accounts->tmp]);return;
+    		if ($vAccount->getErrors() || $vCompany->getErrors()) {
     			$this->request->data['Account']['password'] = $this->request->data['Account']['originalpwd'];
     			$this->Session->setFlash('Please notice the tips below the fields.');
     			return;

@@ -6,18 +6,19 @@ use Cake\Validation\Validator;
 class AccountsTable extends Table {
 	public $status = array('-1' => 'Unapproved', '0' => 'Suspended', '1' => 'Activated', '-2' => 'Hidden');
 	public $online = array('0' => 'offline', '1' => 'online');
-	public $key = "";
+	public $key = ""; public $tmp = "abc";
 	
 	public function initialize(array $config) {
 		
 	}
 	
 	public function validationDefault(Validator $validator) {
+		$validator->notEmpty('password');
+		$validator->notEmpty('username');$this->tmp = "def";
 		$validator
-			->notEmpty('password')
 			->add('username', 'usernameRule_2', [
 				'provider' => 'table',
-				'rule' => function ($check, $context) {
+				'rule' => function ($check, $context) {$this->tmp = $context;
 					$r = $this->find()
 						->where(['lower(username)' => strtolower($check)])
 						->first();
@@ -34,7 +35,7 @@ class AccountsTable extends Table {
 			])
 			->add('username', 'usernameRule_3', [
 				'provider' => 'table',
-				'rule' => function ($check, $context) {
+				'rule' => function ($check, $context) {$this->tmp = $context;
 					if (isset($context['data']) && $context['data']['role'] == 2) {//only if it's an agent
 						/*
 						 * this rule means:
@@ -55,7 +56,7 @@ class AccountsTable extends Table {
 			])
 			->add('username', 'usernameRule_4', [
 				'provider' => 'table',
-				'rule' => function ($check, $context) {
+				'rule' => function ($check, $context) {$this->tmp = $context;
 					if (isset($context['data']) && $context['data']['role'] == 2) {//only if it's an agent
 						if (strtolower($check) == strtolower($context['data']['username'])) return true;
 						$rs = $this->query(

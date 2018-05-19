@@ -3,7 +3,7 @@ echo $this->Form->create($data, [
 	'url' => ['controller' => 'accounts', 'action' => 'regcompany'],
 	"class" => 'form-inline',
 	'id' => 'frmReg'
-]);
+]);var_dump($tmp);
 ?>
 <table style="width:100%;border:0;">
 	<caption>Fields marked with an asterisk (<font color="red">*</font>) are required.</caption>
