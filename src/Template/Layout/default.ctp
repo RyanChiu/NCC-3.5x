@@ -61,8 +61,9 @@ if ($userinfo) {
     <?php //echo "<font color='red'>here@" . print_r($mustread, true) . "</font>";
     if ($userinfo) {
 	    echo $this->Navbar->create($this->Html->icon('home') . ' HOME', 
-	    	['fluid' => true, 'inverse' => true, 'style' => 'margin-bottom:0;']);
-		    echo $this->Navbar->beginMenu();
+			['fluid' => true, 'inverse' => true, 'style' => 'margin-bottom:0;']);
+			echo $this->Navbar->beginMenu();
+				//echo $this->Navbar->link('HOME', '/'/*, ['class' => 'active']*/);
 			    echo $this->Navbar->beginMenu('NEWS');
 			    	echo $this->Navbar->link("UPDATE NEWS", '/accounts/updnews');
 			   		echo $this->Navbar->link('ALERTS', '/accounts/updalerts');
@@ -73,21 +74,21 @@ if ($userinfo) {
 			    echo $this->Navbar->beginMenu('AGENT');
 			    	echo $this->Navbar->link('MANAGE AGENT', '/accounts/lstagents/-1');
 			    echo $this->Navbar->endMenu();
-			    echo $this->Navbar->link('APPROVE NEW AGENT', '/');
+			    echo $this->Navbar->link('APPROVE NEW AGENT', '/xx');
 			    echo $this->Navbar->beginMenu('LINK', '/links/');
-			    	echo $this->Navbar->link('CONFIG SITE', '/');
+			    	echo $this->Navbar->link('CONFIG SITE', '/xx');
 			    echo $this->Navbar->endMenu();
 			    echo $this->Navbar->beginMenu('STATS', '/stats/');
-			    	echo $this->Navbar->link('OFFICE PERFORMANCE CHARTS', '/');
-			    	echo $this->Navbar->link('TOP 10 ARCHIVES', '/');
+			    	echo $this->Navbar->link('OFFICE PERFORMANCE CHARTS', '/xx');
+			    	echo $this->Navbar->link('TOP 10 ARCHIVES', '/xx');
 			    echo $this->Navbar->endMenu();
-			    echo $this->Navbar->beginMenu('LOG', '/');
-			    	echo $this->Navbar->link('CHAT LOG', '/');
-			    	echo $this->Navbar->link('CLICK LOG', '/');
-			    	echo $this->Navbar->link('LOGIN LOG', '/');
+			    echo $this->Navbar->beginMenu('LOG', '/xx');
+			    	echo $this->Navbar->link('CHAT LOG', '/xx');
+			    	echo $this->Navbar->link('CLICK LOG', '/xx');
+			    	echo $this->Navbar->link('LOGIN LOG', '/xx');
 			    echo $this->Navbar->endMenu();
-			    echo $this->Navbar->link('PROFILE', '/');
-			    echo $this->Navbar->link('HOW TO SELL', '/');
+			    echo $this->Navbar->link('PROFILE', '/xx');
+			    echo $this->Navbar->link('HOW TO SELL', '/xx');
 		    echo $this->Navbar->endMenu();
 		    echo $this->Navbar->text(
 		    	$this->Html->icon('user') . $userinfo['username'] . '&nbsp;&nbsp;&nbsp;&nbsp;'
