@@ -159,7 +159,7 @@ foreach ($rs as $r):
 	<?php
 	echo $this->Html->link(
 		$this->Html->image('iconEdit.png', ['border' => 0, 'width' => 16, 'height' => 16]) . '&nbsp;',
-		['controller' => 'accounts', 'action' => 'updcompany', 'id' => $r->companyid],
+		['controller' => 'accounts', 'action' => 'updcompany', $r->companyid],
 		['title' => 'Click to edit this record.', 'escape' => false]
 	);
 	echo $this->Html->link(
