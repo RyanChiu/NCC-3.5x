@@ -111,9 +111,8 @@ class AppController extends Controller
     		$excludedsites = $this->SiteExcludings->find()
     			->where(['OR' => ['companyid' => $aginfo->companyid, 'agentid' => $this->Auth->user('id')]])
     			->all()
-    			->combine('id', 'siteid');
-    		$excludedsites = json_decode(json_encode($excludedsites), true);
-    		$excludedsites = array_unique($excludedsites);
+    			->combine('id', 'siteid')
+    			->toArray();
     		/*$excludedsites = $this->Site->find('list',
     				array(
     						'fields' => array('id', 'sitename'),
@@ -125,8 +124,8 @@ class AppController extends Controller
     		$excludedsites = $this->Sites->find()
     			->where(['id in' => array_values($excludedsites)])
     			->all()
-    			->combine('id', 'sitename');
-    		$excludedsites = json_decode(json_encode($excludedsites), true);	
+    			->combine('id', 'sitename')
+    			->toArray();	
     		/*
     		 * prepare the "agent must read" part
     		 */
