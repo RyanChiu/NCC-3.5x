@@ -6,7 +6,7 @@ use Cake\ORM\TableRegistry;
 
 class AccountsController extends AppController {
 	
-	public $__limit = 10;
+	public $__limit = 50;
 	
 	public function initialize()
 	{
@@ -416,7 +416,7 @@ class AccountsController extends AppController {
     		if (strlen(trim($originalpwd)) != strlen($originalpwd)) {
     			$data['Account.password'] = $this->request->getData('Account.originalpwd');
     			$this->Flash->set(
-    				'Please remove any blank in front of or at the end of your password and try again.',
+    				'Please remove any blank in your password and try again.',
     				['element' => 'error']
     			);
     			return;
@@ -517,7 +517,138 @@ class AccountsController extends AppController {
     		}
     	}
     	$this->set(compact('data'));
-    }
+	}
+	
+	function updcompany($id = null) {
+		/*prepare the countries for this view*/
+		$cts = $this->Countries->find()
+			->all()
+			->combine('abbr', 'fullname')
+			->toArray();
+		$this->set('cts', $cts);
+				
+		/*prepare associated sites data*/
+		$exsites = $this->SiteExcludings->find()
+			->where(['companyid' => $id])
+			->all()
+			->combine('id', 'siteid')
+			->toArray();
+		$sites = $this->Sites->find()
+			->where(['status' => 1])
+			->all()
+			->combine('id', 'sitename')
+			->toArray();
+		$exsites = array_unique($exsites);
+		$exsites = array_flip($exsites);
+		foreach ($exsites as $k => $v) {
+			if (in_array($k, array_keys($sites))) {
+				$exsites[$k] = $sites[$k];
+			}
+		}
+		$this->set(compact('exsites'));
+		$this->set(compact('sites'));
+		
+		$this->set('payouttype', $this->Companies->payouttype);
+		if (empty($this->request->getData())) {
+			/*read the office into the update page*/
+			$account = $this->Accounts->get($id);
+			//$account['Account']['password'] = '';
+			//$account['Account']['originalpwd'] = '';
+			$account['password'] = $account['originalpwd'];
+			$company = $this->Companies->get($id);
+			$this->request->data['Account'] = $account;
+			$this->request->data['Company'] = $company;
+		} else {
+			$data = [];
+			/*check if the passwords match or empty or untrimed*/
+			$originalpwd = $this->request->getData('Account.originalpwd');
+			if (strlen(trim($originalpwd)) != strlen($originalpwd)) {
+				$data['Account.password'] = $this->request->getData('Account.originalpwd');
+				$this->Flash->set(
+    				'Please remove any blank in your password and try again.',
+    				['element' => 'error']
+    			);
+				return;
+			}
+			//if (empty($this->request->data['Account']['originalpwd']) || $this->request->data['Account']['password'] != $this->Auth->password($this->request->data['Account']['originalpwd'])) {
+			if (empty($this->request->getData('Account.originalpwd')) || $this->request->getData('Account.password') != $this->request->data['Account']['originalpwd']) {
+				//$this->request->data['Account']['password'] = '';
+				//$this->request->data['Account']['originalpwd'] = '';
+				$this->Flash->set(
+    				'The passwords don\'t match to each other, please try again(and do not left it blank).',
+    				['element' => 'error']
+    			);
+				return;
+			}
+			
+			/*validate the posted fields*/
+			$this->Account->set($this->request->data);
+			$this->Company->set($this->request->data);
+			if (!$this->Account->validates() || !$this->Company->validates()) {
+				//$this->request->data['Account']['password'] = '';
+				$this->request->data['Account']['password'] = $this->request->data['Account']['originalpwd'];
+				$this->Session->setFlash('Please notice the tips below the fields.');
+				return;
+			}
+			
+			/*actually save the posted data*/
+			$this->Account->create();
+			$this->request->data['Account']['username4m'] = __fillzero4m($this->request->data['Account']['username']);
+			if ($this->Account->save($this->request->data)) {//1stly, save the data into 'accounts'
+				$this->Session->setFlash('Only account updated.');
+				
+				$this->request->data['Company']['id'] = $this->Account->id;
+				$this->Company->create();
+				if ($this->Company->save($this->request->data)) {//2ndly, save the data into 'companies'
+					/*after the office saved, update the site_excluding data, then*/
+					$exdone = true;
+					if ($this->Auth->user('Account.role') == 0) {//only when it's an admin
+						$__sites = $this->request->data['SiteExcluding']['siteid'];
+						if (is_array($__sites)) {
+							$__sites = array_diff(array_keys($sites), $__sites);
+						} else {
+							$__sites = array_keys($sites);
+						}
+						$exdata = array();
+						foreach ($__sites as $__site) {
+							array_push(
+								$exdata, 
+								array(
+									'companyid' => $this->request->data['Company']['id'],
+									'siteid' => $__site
+								)
+							);
+						}
+						$this->SiteExcluding->deleteAll(//since if no recs to del, it seems also return false, so we ignore it here
+							array('companyid' => $this->request->data['Company']['id'])
+						);
+						if (!empty($exdata)) {
+							$exdone = ($this->SiteExcluding->saveAll($exdata) ? true : false);
+						} else {
+							$exdone = true;
+						}
+					}
+					
+					/*redirect to some page*/
+					$this->Session->setFlash('Office "'
+						. $this->request->data['Account']['username'] . '" updated.'
+						. ($exdone ? '' : '<br><i>(Site associating failed.)</i>')
+					);
+					if ($this->Auth->user('Account.role') == 0) {// means an administrator
+						$this->redirect(array('controller' => 'accounts', 'action' => 'lstcompanies'));
+					} else if ($this->Auth->user('Account.role') == 1) {// means an office
+						$this->redirect(array('controller' => 'accounts', 'action' => 'index'));
+					}
+					$this->redirect(array('controller' => 'accounts', 'action' => 'lstcompanies'));
+				} else {
+					$this->request->data['Account']['password'] = $this->request->data['Account']['originalpwd'];
+					//should add some codes here to delete the record that saved in 'accounts' table before if failed
+				}
+			} else {
+				$this->request->data['Account']['password'] = $this->request->data['Account']['originalpwd'];
+			}			
+		}
+	}
     
     function lstagents($id = null) {
     	$userinfo = $this->Auth->user();

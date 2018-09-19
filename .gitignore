@@ -17,6 +17,7 @@ Icon?
 ehthumbs.db
 Thumbs.db
 
+*.lock
 # Tool specific files #
 #######################
 # vim
