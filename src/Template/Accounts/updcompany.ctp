@@ -1,12 +1,12 @@
 <?php
-echo $this->Form->create($data, [
-	'url' => ['controller' => 'accounts', 'action' => 'regcompany'],
-	"class" => 'form-inline',
-	'id' => 'frmReg'
-]);var_dump($tmp);
+$userinfo = $Auth->user();
+echo $this->Form->create(null, [
+	'url' => ['controller' => 'accounts', 'action' => 'updcompany'],
+	"class" => 'form-inline'
+]);
 ?>
 <table style="width:100%;border:0;">
-	<caption>Fields marked with an asterisk (<font color="red">*</font>) are required.</caption>
+	<caption>Fields marked with an asterisk (*) are required.</caption>
 	<tr>
 		<td width="222">Office Name : </td>
 		<td>
@@ -157,39 +157,49 @@ echo $this->Form->create($data, [
 			$sites,
 			[
 				'multiple' => 'checkbox',
+				'disabled' => 'false',
 				'value' => $selsites
 			]
 		);
+		if ($userinfo['role'] != 0) {//means not an administrator
+		?>
+			<div id="msgbox_nochange" style="display:none;float:left;background-color:#ffffcc;">
+			<font color="red">
+			Sorry, you can't do this.If you want to, please contact your administrator.
+			</font>
+			</div>
+			<script type="text/javascript">
+			jQuery(":checkbox").click(
+				function () {
+					jQuery("#msgbox_nochange").show("normal");
+					return false;
+				}
+			);
+			jQuery("#msgbox_nochange").click(
+				function () {
+					jQuery(this).toggle("normal");
+				}
+			);
+			</script>
+		<?php	
+		}
 		?>
 		</td>
 	</tr>
 	<tr>
 		<td>
+		<label id="labelUAS">Activated</label>
 		<?php
-		echo $this->Form->input('Account.status', ['type' => 'hidden', 'value' => '-1']);//the default status if unapproved
+		echo $this->Form->checkbox(
+			'Account.status',
+			['id' => 'AccountStatus']
+		);
 		?>
 		</td>
 		<td>
 		<?php
-		echo $this->Form->button(__('Add & New'), [
-			'onclick' => 'javascript:__changeAction(\'frmReg\', \''
-				. $this->Url->build([
-					'controller' => 'accounts',
-					'action' => 'regcompany',
-					'id' => -1
-				])
-				. '\');',
+		echo $this->Form->button(__('Update'), [
 			'style' => 'width:112px;',
-			'class' => 'btn btn-info btn-xs'
-		]);
-		echo "&nbsp;";
-		echo $this->Form->button(__('Add'), [
-			'onclick' => 'javascript:__changeAction(\'frmReg\', \''
-				. $this->Url->build([
-					'controller' => 'accounts',
-					'action' => 'regcompany'
-				])
-				. '\');',
 			'style' => 'width:112px;',
 			'class' => 'btn btn-info btn-xs'
 		]);
@@ -198,12 +208,30 @@ echo $this->Form->create($data, [
 	</tr>
 </table>
 <script type="text/javascript">
-jQuery(":checkbox").attr({style: "border:0px;width:16px;vertical-align:middle;"});
+jQuery(":checkbox").attr({
+	style: "border: 0px; width: 16px; margin-left: 2px; vertical-align: middle;"
+});
+
+jQuery("#AccountStatus").click(function() {
+	if (jQuery("#AccountStatus").attr("checked")) {
+		jQuery("#AccountStatus").val(1);
+	} else {
+		jQuery("#AccountStatus").val(0);
+	}
+});
+
+if (jQuery("#AccountStatus").val() == "-1") {
+	jQuery("#labelUAS").text("Approved");
+	jQuery("#AccountStatus").attr("checked", false);
+	jQuery("#AccountStatus").val(-1);
+	jQuery("#AccountStatus_").val(-1);
+} else {
+	jQuery("#labelUAS").text("Activated");
+}
 </script>
 <?php
+echo $this->Form->input('Account.id', array('type' => 'hidden'));
 echo $this->Form->input('Account.role', array('type' => 'hidden', 'value' => '1'));//the value 1 as being an office
-echo $this->Form->input('Account.regtime', array('type' => 'hidden', 'value' => ''));//should be set to current time when saving into the DB
-echo $this->Form->input('Account.online', array('type' => 'hidden', 'value' => '0'));// the value 0 means "offline"
 echo $this->Form->input('Company.id', array('type' => 'hidden'));
 echo $this->Form->end();
 ?>
