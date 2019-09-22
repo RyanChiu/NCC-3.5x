@@ -571,7 +571,8 @@ class AccountsController extends AppController {
 				return;
 			}
 			//if (empty($this->request->data['Account']['originalpwd']) || $this->request->data['Account']['password'] != $this->Auth->password($this->request->data['Account']['originalpwd'])) {
-			if (empty($this->request->getData('Account.originalpwd')) || $this->request->getData('Account.password') != $this->request->data['Account']['originalpwd']) {
+			if (empty($this->request->getData('Account.originalpwd')) 
+				|| $this->request->getData('Account.password') != $this->request->getData('Account.originalpwd')) {
 				//$this->request->data['Account']['password'] = '';
 				//$this->request->data['Account']['originalpwd'] = '';
 				$this->Flash->set(
@@ -581,29 +582,39 @@ class AccountsController extends AppController {
 				return;
 			}
 			
-			/*validate the posted fields*/
-			$this->Account->set($this->request->data);
-			$this->Company->set($this->request->data);
-			if (!$this->Account->validates() || !$this->Company->validates()) {
-				//$this->request->data['Account']['password'] = '';
-				$this->request->data['Account']['password'] = $this->request->data['Account']['originalpwd'];
-				$this->Session->setFlash('Please notice the tips below the fields.');
-				return;
-			}
+			/*validate the posted fields ????????????? the "validationDefault" is executed but no errors*/
+			$accounts = TableRegistry::get("Accounts");
+			$companies = TableRegistry::get("Companies");
+    		$vAccount = $accounts->newEntity();
+    		$vAccount = $accounts->patchEntity($vAccount, $this->request->getData());
+    		$vCompany = $this->Companies->newEntity($this->request->getData());
+    		//$vCompany = $companies->patchEntity($vCompany, $this->request->getData());
+    		if ($vAccount->getErrors() || $vCompany->getErrors()) {
+    			$this->request->data['Account']['password'] = $this->request->data['Account']['originalpwd'];
+    			$this->Flash->set(
+					'Please notice the tips below the fields.',
+					['element' => 'error']
+				);
+    			return;
+    		}
 			
 			/*actually save the posted data*/
-			$this->Account->create();
-			$this->request->data['Account']['username4m'] = __fillzero4m($this->request->data['Account']['username']);
-			if ($this->Account->save($this->request->data)) {//1stly, save the data into 'accounts'
-				$this->Session->setFlash('Only account updated.');
+			$updData = $this->request->data;
+			$account = $accounts->get($updData['Account']['id']);
+			$updData['Account']['username4m'] = __fillzero4m($updData['Account']['username']);
+			$accounts->patchEntity($account, $updData['Account']);
+			if ($accounts->save($account)) {//1stly, save the data into 'accounts'
+				$this->Flash->set('Only account updated.');
 				
-				$this->request->data['Company']['id'] = $this->Account->id;
-				$this->Company->create();
-				if ($this->Company->save($this->request->data)) {//2ndly, save the data into 'companies'
+				$updData['Company']['id'] = $updData['Account']['id'];
+				$company = $companies->get($updData['Company']['id']);
+				$companies->patchEntity($company, $updData['Company']);
+				if ($companies->save($company)) {//2ndly, save the data into 'companies'
 					/*after the office saved, update the site_excluding data, then*/
+					$userinfo = $this->Auth->user();
 					$exdone = true;
-					if ($this->Auth->user('Account.role') == 0) {//only when it's an admin
-						$__sites = $this->request->data['SiteExcluding']['siteid'];
+					if ($userinfo['role'] == 0) {//only when it's an admin
+						$__sites = $updData['SiteExcluding']['siteid'];
 						if (is_array($__sites)) {
 							$__sites = array_diff(array_keys($sites), $__sites);
 						} else {
@@ -614,32 +625,36 @@ class AccountsController extends AppController {
 							array_push(
 								$exdata, 
 								array(
-									'companyid' => $this->request->data['Company']['id'],
+									'companyid' => $updData['Company']['id'],
 									'siteid' => $__site
 								)
 							);
 						}
-						$this->SiteExcluding->deleteAll(//since if no recs to del, it seems also return false, so we ignore it here
-							array('companyid' => $this->request->data['Company']['id'])
+						$this->SiteExcludings->deleteAll(//since if no recs to del, it seems also return false, so we ignore it here
+							['companyid' => $updData['Company']['id']]
 						);
 						if (!empty($exdata)) {
-							$exdone = ($this->SiteExcluding->saveAll($exdata) ? true : false);
+							$seEntities = $this->SiteExcludings->newEntities($exdata);
+							foreach ($seEntities as $entity) {
+								$this->SiteExcludings->save($entity);
+							}
+							//$exdone = ($this->SiteExcluding->saveAll($exdata) ? true : false);
 						} else {
 							$exdone = true;
 						}
 					}
 					
 					/*redirect to some page*/
-					$this->Session->setFlash('Office "'
+					$this->Flash->set('Office "'
 						. $this->request->data['Account']['username'] . '" updated.'
 						. ($exdone ? '' : '<br><i>(Site associating failed.)</i>')
 					);
-					if ($this->Auth->user('Account.role') == 0) {// means an administrator
-						$this->redirect(array('controller' => 'accounts', 'action' => 'lstcompanies'));
-					} else if ($this->Auth->user('Account.role') == 1) {// means an office
-						$this->redirect(array('controller' => 'accounts', 'action' => 'index'));
+					if ($userinfo['role'] == 0) {// means an administrator
+						$this->redirect(['controller' => 'accounts', 'action' => 'lstcompanies']);
+					} else if ($userinfo['role'] == 1) {// means an office
+						$this->redirect(['controller' => 'accounts', 'action' => 'index']);
 					}
-					$this->redirect(array('controller' => 'accounts', 'action' => 'lstcompanies'));
+					$this->redirect(['controller' => 'accounts', 'action' => 'lstcompanies']);
 				} else {
 					$this->request->data['Account']['password'] = $this->request->data['Account']['originalpwd'];
 					//should add some codes here to delete the record that saved in 'accounts' table before if failed

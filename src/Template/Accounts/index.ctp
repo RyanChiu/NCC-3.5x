@@ -1,5 +1,5 @@
 <?php
-$userinfo = $Auth->user();
+$userinfo = $Auth->user(); //echo ROOT . "<br/><br/>" . WWW_ROOT . "<br/><br/>"; //FOR DEBUG
 ?>
 <span>
 	<?php

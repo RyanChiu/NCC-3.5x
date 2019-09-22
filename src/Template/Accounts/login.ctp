@@ -9,10 +9,10 @@
 
     <!-- Captcha code user input textbox -->
     <?= $this->Form->input('CaptchaCode', [
-		'label' => 'Retype the characters from the picture:',
-		'maxlength' => '10',
-    	'style' => 'width:360px;',
-		'id' => 'CaptchaCode'
+      'label' => 'Retype the characters from the picture:',
+      'maxlength' => '10',
+        'style' => 'width:360px;',
+      'id' => 'CaptchaCode'
     ]) ?>
 
 <?= $this->Form->button(__('Log in'), ['style' => 'width:360px;', 'class' => 'btn btn-primary']) ?>

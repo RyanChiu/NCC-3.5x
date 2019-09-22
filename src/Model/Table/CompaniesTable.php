@@ -2,6 +2,8 @@
 // src/Model/Table/CompaniesTable.php
 namespace App\Model\Table;
 use Cake\ORM\Table;
+use Cake\ORM\Rule\IsUnique;
+use Cake\ORM\RulesChecker;
 use Cake\Validation\Validator;
 class CompaniesTable extends Table {
 	public $payouttype = [
@@ -14,26 +16,21 @@ class CompaniesTable extends Table {
 		
 	}
 	
+	public function buildRules(RulesChecker $rules) {
+		$rules->add(
+			$rules->isUnique(['officename']), 'uniqueOfficename',
+			['message' => 'Sorry, this "Office Name" has already been taken.']
+		);
+		return $rules;
+	}
+
 	public function validationDefault(Validator $validator) {$this->tmp = "789";
-		$validator->notEmpty('man1stname');
-		$validator->notEmpty('manlastname');
-		$validator->notEmpty('mancellphone');
-		$validator->notEmpty('country');
-		$validator
-			->add('officename', 'officenameRule_1', [
-				'rule' => 'notEmpty',
-				'message' => 'Please do not let this field empty.'
-			]);
-		$validator
-			->add('officename', 'officenameRule_2', [
-				'rule' => 'isUnique',
-				'message' => 'Sorry, this "Office Name" has already been taken.'
-			]);
-		$validator
-			->add('manemail', 'manemail_rule', [
-				'rule' => 'email',
-				'message' => 'Please fill out a valid email address.'
-			]);
+		$validator->notBlank('man1stname');
+		$validator->notBlank('manlastname');
+		$validator->notBlank('mancellphone');
+		$validator->notBlank('officename');
+		$validator->notBlank('country');
+		$validator->email('manemail');
 		
 		return $validator;
 	}
