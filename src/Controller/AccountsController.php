@@ -626,6 +626,7 @@ class AccountsController extends AppController {
 								$exdata, 
 								array(
 									'companyid' => $updData['Company']['id'],
+									'agentid' => 0,
 									'siteid' => $__site
 								)
 							);
@@ -636,11 +637,9 @@ class AccountsController extends AppController {
 						if (!empty($exdata)) {
 							$seEntities = $this->SiteExcludings->newEntities($exdata);
 							foreach ($seEntities as $entity) {
-								$this->SiteExcludings->save($entity);
+								$exdone = $exdone && $this->SiteExcludings->save($entity);
 							}
 							//$exdone = ($this->SiteExcluding->saveAll($exdata) ? true : false);
-						} else {
-							$exdone = true;
 						}
 					}
 					

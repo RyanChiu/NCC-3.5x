@@ -157,7 +157,7 @@ echo $this->Form->create(null, [
 			$sites,
 			[
 				'multiple' => 'checkbox',
-				'disabled' => 'false',
+				//'disabled' => 'disabled',
 				'value' => $selsites
 			]
 		);
